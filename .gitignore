@@ -1,1 +1,11 @@
--e "# Simulator Trash\nsim.out\nobj_dir/\n*.vcd\n*.log\n*.fs\n*.bit\n\n# System trash\n__pycache__/\n.DS_Store" 
+# Simulator Trash
+sim.out
+obj_dir/
+*.vcd
+*.log
+*.fs
+*.bit
+
+# System trash
+__pycache__/
+.DS_Store
