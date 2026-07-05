@@ -1,9 +1,9 @@
 module and_gate(
-    input logic a
-    input logic b
+    input logic a,
+    input logic b,
     output logic y
 );
 
-assign y= a & b ;
+    assign y = a & b;
 
 endmodule
