@@ -1,6 +1,6 @@
 # Define compiler and flags
 VC = verilator
-VCFLAGS = -Wall --cc --exe --build -j 0 --trace
+VCFLAGS = -Wall --binary -j 0 --trace
 
 # Directories and files
 RTL_DIR = ../rtl
