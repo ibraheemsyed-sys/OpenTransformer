@@ -1,7 +1,7 @@
 module and_gate(
     input logic a
     input logic b
-    output logic c
+    output logic y
 );
 
 assign y= a & b ;
