@@ -5,9 +5,8 @@ VCFLAGS = -Wall --binary -j 0 --trace
 # Directories and files
 RTL_DIR = ../rtl
 TB_DIR = ../tb
-TOP_MODULE = tb_and_gate
-SRC = $(TB_DIR)/tb_and_gate.sv $(RTL_DIR)/and_gate.sv
-
+TOP_MODULE = tb_alu_8bit
+SRC = $(RTL_DIR)/alu_pkg.sv $(RTL_DIR)/alu_8bit.sv $(TB_DIR)/tb_alu_8bit.sv
 all: clean sim
 
 sim:
@@ -18,8 +17,8 @@ sim:
 
 wave:
 	@echo "=> Opening GTKWave..."
-	gtkwave and_gate.vcd &
+	gtkwave alu_8bit.vcd &
 
 clean:
 	@echo "=> Cleaning workspace..."
-	rm -rf obj_dir and_gate.vcd
+	rm -rf obj_dir alu_8bit.vcd

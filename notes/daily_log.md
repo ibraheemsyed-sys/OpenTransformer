@@ -2,23 +2,197 @@
 
 ## Progress Update
 
-### Week 1: Toolchain Ignition & Baseline AND Gate Verification
+### Week 1: Toolchain Setup & AND Gate Verification
 
-**Goal:** Establish a stable WSL2/Codespace toolchain and prove the compilation pipeline works using a basic combinational AND gate.
-**Studied:** Nand2Tetris to SystemVerilog (Mentor-Guided + HDLBits)
-**HDLBits Practice:** Verilog Language > Basics, Vectors, and Modules. (Focus on bitwise vs logical operators).
+**Goal:** Set up a working WSL2/Codespaces development environment and verify the simulation flow by building a simple AND gate.
 
-**Theory & Concepts:**
-- [x] Establish a reliable Ubuntu-22.04 LTS container environment on Windows/Codespaces.
-- [x] Verify installation of key tools: Verilator, Yosys, and GTKWave.
-- [x] Map Nand2Tetris CHIP logic to SystemVerilog `module` syntax.
-- [x] Understand how to write a simple testbench to drive stimuli into a module.
+**Studied:**
+- Nand2Tetris to SystemVerilog (Mentor Guided)
+- HDLBits: Verilog Language > Basics, Vectors, and Modules
 
-**Tasks Completed:**
-- [x] Design a basic synthesizable SystemVerilog combinational logic block 'and_gate.sv'.
-- [x] Develop a standard SystemVerilog testbench 'tb_and_gate.sv' checking standard AND operations using initial blocks.
-- [x] Construct a basic compilation Makefile to simulate the design with Verilator and output visual GTKWave waveform files.
+### What I Learned
+- [x] Set up an Ubuntu 22.04 development environment in WSL2/Codespaces.
+- [x] Installed and verified Verilator, Yosys, and GTKWave.
+- [x] Learned how Nand2Tetris CHIP definitions translate into SystemVerilog modules.
+- [x] Wrote my first SystemVerilog testbench and understood how it drives inputs into a design.
 
-**Files updated:** `rtl/and_gate.sv`, `tb/tb_and_gate.sv`, `sim/Makefile`
-**Commit:** `feat: establish hybrid toolchain and verify baseline and_gate using SystemVerilog testbench`
+### Tasks Completed
+- [x] Created a synthesizable `and_gate.sv` module.
+- [x] Wrote `tb_and_gate.sv` to verify all four AND gate input combinations.
+- [x] Built a simple Makefile to compile and simulate the design with Verilator.
 
+**Files Updated**
+- `rtl/and_gate.sv`
+- `tb/tb_and_gate.sv`
+- `sim/Makefile`
+
+**Commit**
+```text
+feat: establish development toolchain and verify basic AND gate
+```
+
+---
+
+# Dev Log - Jul 5, 2026
+
+## Progress Update
+
+### Week 1 Continued: 8-Bit ALU & SystemVerilog Packages
+
+**Goal:** Build an 8-bit ALU, organize reusable types with SystemVerilog packages, and resolve compiler warnings while learning more about Verilator.
+
+**Studied:**
+- SystemVerilog Packages
+- Enums
+- Case Statements
+- HDLBits: Procedures and More Verilog Features
+
+### What I Learned
+- [x] How packages help organize reusable types like enums.
+- [x] Why type scoping (`package::type`) matters during compilation.
+- [x] Why importing packages inside modules avoids `$unit` namespace warnings.
+- [x] Why combinational `case` statements should include a `default` branch.
+
+### Tasks Completed
+- [x] Created `alu_pkg.sv` to store the `alu_op_e` enum.
+- [x] Built an 8-bit combinational ALU supporting:
+  - ADD
+  - SUB
+  - AND
+  - OR
+  - XOR
+  - NOT
+- [x] Wrote a SystemVerilog testbench to verify each ALU operation.
+- [x] Added a `default` case to eliminate `CASEINCOMPLETE` warnings.
+- [x] Used the WaveTrace VS Code extension to view waveform files since GTKWave could not run inside Codespaces.
+
+**Files Updated**
+- `rtl/alu_pkg.sv`
+- `rtl/alu_8bit.sv`
+- `sim/tb_alu_8bit.sv`
+- `sim/Makefile`
+
+**Commit**
+```text
+fix: resolve package type issues and verify 8-bit ALU simulation
+```
+
+---
+
+# Problems I Ran Into
+
+### Package Type Error
+
+**Error**
+```text
+Cannot find file containing interface: 'alu_op_e'
+```
+
+**Cause**
+
+Verilator parsed the module ports before it knew what `alu_op_e` was, so it treated the enum as an unknown interface.
+
+**Solution**
+
+Referenced the enum directly in the port list:
+
+```systemverilog
+input alu_pkg::alu_op_e opcode
+```
+
+---
+
+### Package Import Warning
+
+**Warning**
+```text
+%Warning-IMPORTSTAR
+```
+
+**Cause**
+
+I originally imported the package at `$unit` scope.
+
+**Solution**
+
+Moved the import statement inside the module to keep the namespace clean.
+
+---
+
+### Incomplete Case Statement
+
+**Warning**
+```text
+%Warning-CASEINCOMPLETE
+```
+
+**Cause**
+
+My enum only defined operations 0–5, but a 3-bit opcode can represent values 0–7.
+
+**Solution**
+
+Added:
+
+```systemverilog
+default: result = 8'b0;
+```
+
+This guarantees every possible opcode has a defined output.
+
+---
+
+### GTKWave in Codespaces
+
+**Error**
+```text
+Could not initialize GTK! Is DISPLAY env var/xhost set?
+```
+
+**Cause**
+
+Codespaces runs in a headless Linux environment without a graphical desktop.
+
+**Solution**
+
+Used the WaveTrace VS Code extension to inspect the generated `.vcd` waveform instead.
+
+---
+
+# Verification Results
+
+## ALU Test Output
+
+```text
+Time |  A | B | opcode | result
+--------------------------------
+10   | 10 | 8 |   0    | 18
+20   | 10 | 8 |   1    | 2
+30   | 10 | 8 |   5    | 245
+40   | 10 | 8 |   3    | 10
+50   | 10 | 8 |   4    | 2
+60   | 10 | 8 |   2    | 8
+```
+
+## Expected Results
+
+| Opcode | Operation | Expected Result |
+|--------:|-----------|----------------:|
+| 0 | ADD | 18 |
+| 1 | SUB | 2 |
+| 2 | AND | 8 |
+| 3 | OR | 10 |
+| 4 | XOR | 2 |
+| 5 | NOT | 245 |
+
+The simulation output matched the expected results for every ALU operation.
+
+## Waveform
+
+![ALU Waveform](image.png)
+
+---
+
+## Reflection
+
+This project helped me become more comfortable with organizing SystemVerilog projects, writing reusable packages, and debugging Verilator warnings. I also learned that compiler warnings usually point to good design practices rather than just errors to silence. Building the ALU was a good step up from the simple AND gate and gave me more confidence working with combinational logic and simulation.
