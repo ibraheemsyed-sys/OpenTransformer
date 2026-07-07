@@ -44,30 +44,49 @@ This project is being developed incrementally, starting from basic digital logic
 
 ## Development Roadmap
 
-This project is being developed step by step, starting with fundamental digital logic and gradually exploring the hardware concepts used in machine learning accelerators.
+OpenTransformer is being developed incrementally, starting with fundamental digital logic and gradually moving toward more advanced hardware architectures used in machine learning accelerators.
 
-### Completed
+Planned development areas include:
 
-- [x] Set up SystemVerilog simulation environment
-- [x] Verify basic combinational logic designs
-- [x] Build and test an 8-bit ALU
-- [x] Learn package-based organization and verification practices
+### SystemVerilog & Verification Foundations
+- Build stronger SystemVerilog design practices
+- Explore sequential logic, registers, and state machines
+- Learn interfaces, modports, clocking blocks, and structured testbench design
+- Develop more advanced verification environments
 
-### Next Steps
+### Hardware Design Components
+- Implement reusable hardware blocks such as:
+  - FIFOs and memory structures
+  - Communication interfaces
+  - Control logic and finite state machines
+  - Arithmetic datapath components
 
-- [ ] Add sequential logic components (clocking, resets, registers)
-- [ ] Build larger datapath components
-- [ ] Explore memory interfaces and control logic
-- [ ] Study hardware structures used in transformer workloads
-- [ ] Experiment with FPGA synthesis and hardware testing
+### Machine Learning Accelerator Exploration
+- Design fixed-point arithmetic units for ML workloads
+- Explore multiply-accumulate (MAC) structures
+- Study matrix computation architectures
+- Investigate systolic array designs and matrix tiling approaches used in neural network accelerators
 
-## Project Goals
+### Hardware Implementation
+- Learn ASIC synthesis concepts using tools such as Yosys
+- Explore hardware optimization and netlist generation
+- Experiment with FPGA synthesis and deployment using the Tang Nano 9K (GW1NR-9)
 
-Long term, this project aims to build a stronger understanding of:
+### Verification & Documentation
+- Build Python-based verification tools
+- Create reproducible simulation workflows
+- Document design decisions, benchmarks, and experiments
+
+## Long-Term Goals
+
+The long-term goal of OpenTransformer is to develop a deeper understanding of how machine learning workloads are transformed into efficient hardware implementations.
+
+Through this project, I aim to explore:
 
 - Computer architecture
 - Digital design and verification
-- Hardware acceleration for machine learning
 - Hardware/software co-design
+- FPGA-based acceleration
+- Efficient computing systems for machine learning
 
-The focus is on learning how efficient computing systems are designed by building, testing, and improving hardware components over time.
+The focus is on learning through implementation: designing, testing, debugging, and improving hardware components while gradually moving toward larger accelerator architectures.
