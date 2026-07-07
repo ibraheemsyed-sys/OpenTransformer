@@ -7,9 +7,9 @@
 **Goal:** Set up a working WSL2/Codespaces development environment and verify the simulation flow by building a simple AND gate.
 
 **Studied:**
-- Nand2Tetris to SystemVerilog (Mentor Guided)
-- HDLBits: Verilog Language > Basics, Vectors, and Modules
-
+- Nand2Tetris
+- HDLBits (Verilog Basics, Vectors, Modules)
+  
 ### What I Learned
 - [x] Set up an Ubuntu 22.04 development environment in WSL2/Codespaces.
 - [x] Installed and verified Verilator, Yosys, and GTKWave.
