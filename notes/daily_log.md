@@ -196,3 +196,75 @@ The simulation output matched the expected results for every ALU operation.
 ## Reflection
 
 This project helped me become more comfortable with organizing SystemVerilog projects, writing reusable packages, and debugging Verilator warnings. I also learned that compiler warnings usually point to good design practices rather than just errors to silence. Building the ALU was a good step up from the simple AND gate and gave me more confidence working with combinational logic and simulation.
+
+# Dev Log - Jul 13, 2026
+
+## Progress Update
+
+### Week 2: 16×8-bit Register File & Git Sync
+
+**Goal:** Build a 16×8-bit register file for the processor datapath and resolve a diverged Git branch before continuing development.
+
+**Studied:**
+- Sequential vs. Combinational Logic
+- Non-blocking assignments (`<=`)
+- Continuous assignments (`assign`)
+- Active-low asynchronous resets (`negedge rst_n`)
+- Git rebasing and branch synchronization
+
+### What I Learned
+
+- [x] How `assign` creates combinational logic for reading register values without waiting for a clock edge.
+- [x] Why `always_ff @(posedge clk)` is used for synchronous writes.
+- [x] Why non-blocking assignments (`<=`) are used in sequential logic.
+- [x] How to reset every register using a loop during an asynchronous reset.
+- [x] How `git pull --rebase` keeps commit history clean when local and remote branches diverge.
+
+### Tasks Completed
+
+- [x] Built a 16×8-bit register file with:
+  - Two independent read ports (`r_data_a`, `r_data_b`)
+  - One write port with a write enable (`w_en`)
+  - Active-low asynchronous reset (`rst_n`)
+- [x] Added the module as `rtl/reg_file.sv`.
+- [x] Synced my local branch with the remote repository using Git rebase.
+
+**Files Updated**
+- `rtl/reg_file.sv`
+
+**Commit**
+```text
+feat: implement 16x8 register file and sync repository
+```
+
+---
+
+## Problem I Ran Into
+
+### Git Branch Divergence
+
+**Issue**
+
+Git reported that my local and remote branches had diverged.
+
+**Cause**
+
+Both branches contained commits that the other didn't have.
+
+**Solution**
+
+Used:
+
+```bash
+git pull --rebase
+```
+
+This replayed my local commits on top of the latest changes from `main`, allowing me to push without creating an unnecessary merge commit.
+
+---
+
+## Next Steps
+
+- Write a SystemVerilog testbench for the register file.
+- Verify reset behavior and write-enable logic.
+- Test simultaneous reads from both output ports.
