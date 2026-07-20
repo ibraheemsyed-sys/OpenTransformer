@@ -268,3 +268,136 @@ This replayed my local commits on top of the latest changes from `main`, allowin
 - Write a SystemVerilog testbench for the register file.
 - Verify reset behavior and write-enable logic.
 - Test simultaneous reads from both output ports.
+
+# Dev Log - Jul 19, 2026
+
+## Progress Update
+
+### Week 2: Register File Verification
+
+**Goal:** Verify the 16×8-bit register file in simulation, fix any testbench issues, and confirm the design with waveform analysis.
+
+**Studied:**
+- Testbench timing
+- Reset sequencing
+- Verilator waveform tracing
+- Multi-port register file verification
+
+---
+
+## Tasks Completed
+
+### Testbench Improvements
+
+- [x] Added an active-low reset sequence (`rst_n = 0`) at the beginning of the simulation to initialize all registers.
+- [x] Updated the testbench to wait for the positive clock edge before checking outputs.
+- [x] Eliminated race conditions between write operations and data reads.
+
+### Simulation & Debugging
+
+- [x] Built and simulated the design with Verilator trace support.
+- [x] Generated a `reg_file.vcd` waveform file.
+- [x] Used WaveTrace to inspect the main register file signals.
+- [x] Verified correct operation of both read ports after write operations.
+
+---
+
+## Files Updated
+
+- `tb/tb_reg_file.sv`
+
+---
+
+## Commit
+
+```text
+test: verify register file simulation and fix testbench timing
+```
+
+---
+
+## Problems I Ran Into
+
+### Registers Were Not Initializing
+
+**Issue**
+
+The register file started with unknown (`X`) values during simulation.
+
+**Cause**
+
+The reset signal wasn't being asserted before the first clock cycles.
+
+**Solution**
+
+Added an active-low reset sequence at the start of the testbench before running any test cases.
+
+---
+
+### Race Conditions
+
+**Issue**
+
+The testbench occasionally checked the outputs before the write operation had completed.
+
+**Cause**
+
+The write and read operations were occurring in the same simulation cycle.
+
+**Solution**
+
+Waited for the next positive clock edge (`@(posedge clk)`) before checking the register values.
+
+---
+
+## Verification Results
+
+### Console Output
+
+```text
+=================== TEST 1 ===================
+Time | w_addr | w_data | w_en | r_addr_a | r_data_a
+-----------------------------------------------------
+36   | 4      | a5     | 0    | 4        | a5
+
+=================== TEST 2 ===================
+Time | w_addr | w_data | w_en | r_addr_b | r_data_b
+-----------------------------------------------------
+56   | 5      | a6     | 0    | 5        | a6
+
+- tb/tb_reg_file.sv:100: Verilog $finish
+```
+
+### Expected Results
+
+| Test | Operation | Expected | Result |
+|------|-----------|----------|--------|
+| 1 | Write `0xA5` to register 4 and read from Port A | `0xA5` | ✅ Pass |
+| 2 | Write `0xA6` to register 5 and read from Port B | `0xA6` | ✅ Pass |
+
+The simulation matched the expected results for both test cases.
+
+---
+
+## Waveform Analysis
+
+The waveform confirmed that:
+
+- Register writes occurred only on the positive clock edge.
+- Both read ports returned the correct stored values.
+- The reset cleared all registers before testing began.
+- No unexpected timing issues or glitches were observed.
+
+### Console Output
+
+![Simulation Output](image-2.png)
+
+### Waveform
+
+![Register File Waveform](image-1.png)
+
+---
+
+## Reflection
+
+This was my first time building and testing a sequential hardware module with multiple read ports. I spent more time debugging the testbench than the register file itself, which helped me better understand reset timing, clocked logic, and waveform debugging. With the register file verified, I'm ready to move on to the next stage of the OpenTransformer datapath.
