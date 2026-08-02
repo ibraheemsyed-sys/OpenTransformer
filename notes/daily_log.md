@@ -510,7 +510,7 @@ t=135 addr=3 write=0 rdata=a5 valid=1 error=0
 | Handshake signals | `valid=1`, `error=0` | ✅ Pass |
 
 The write completed successfully, and the value `0xA5` was read back correctly from register 3.
-
+![alt text](image-3.png)
 ---
 
 ## Reflection

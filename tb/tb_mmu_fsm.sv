@@ -87,6 +87,9 @@ module tb_mmu_fsm;
     Driver drv;
     Transaction tr;
 
+    $dumpfile("mmu_fsm.vcd");
+    $dumpvars(0, tb_mmu_fsm);
+
     rst_n = 0;
     bus.addr = '0;
     bus.wdata = '0;
