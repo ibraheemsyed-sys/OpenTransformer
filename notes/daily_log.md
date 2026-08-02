@@ -401,3 +401,135 @@ The waveform confirmed that:
 ## Reflection
 
 This was my first time building and testing a sequential hardware module with multiple read ports. I spent more time debugging the testbench than the register file itself, which helped me better understand reset timing, clocked logic, and waveform debugging. With the register file verified, I'm ready to move on to the next stage of the OpenTransformer datapath.
+
+
+# Dev Log - August 2, 2026
+
+## Progress Update
+
+### Week 1: Control Logic & OOP Verification Setup
+
+**Goal:** Build the MMU (memory-mapped interface controller) that manages access to the register file and verify it using a class-based SystemVerilog testbench.
+
+**Studied:**
+- SystemVerilog `interface` and `modport`
+- Finite State Machine (FSM) design
+- Class-based verification (`Transaction` and `Driver`)
+- Blocking (`=`) vs. non-blocking (`<=`) assignments
+
+---
+
+## What I Learned
+
+- [x] SystemVerilog interfaces keep related signals organized and make module connections much cleaner.
+- [x] Separating sequential logic (`always_ff`) from combinational logic (`always_comb`) makes FSMs easier to understand and debug.
+- [x] Mixing blocking (`=`) and non-blocking (`<=`) assignments on the same signal causes synthesis and simulation issues.
+- [x] Class-based testbenches take more setup but are much easier to expand than procedural testbenches.
+
+---
+
+## Tasks Completed
+
+- [x] Created `mmu_interface.sv` with a `ready` / `valid` / `error` handshake between the host and MMU.
+- [x] Designed a 4-state FSM (`IDLE → DECODE → ACCESS → DONE`) to control register file accesses.
+- [x] Built a class-based testbench using `Transaction` and `Driver` classes.
+- [x] Verified successful write and readback operations using a register-file stub.
+- [x] Updated `dailylog.md` with this week's progress, debugging notes, and verification results.
+- [x] Committed and pushed all changes to GitHub.
+
+---
+
+## Files Updated
+
+- `rtl/mmu_pkg.sv`
+- `rtl/mmu_interface.sv`
+- `rtl/mmu_fsm.sv`
+- `tb/tb_mmu_fsm.sv`
+- `dailylog.md`
+
+---
+
+## Commit
+
+```text
+feat: add MMU interface, control FSM, and class-based testbench
+```
+
+---
+
+## Problems I Ran Into
+
+### Blocking vs. Non-Blocking Assignment Conflict
+
+**Issue**
+
+```text
+%Error-BLKANDNBLK: rtl/mmu_fsm.sv:18:9: Unsupported: Blocked and non-blocking
+assignments to same variable: 'tb_mmu_fsm.dut.error_r'
+```
+
+**Cause**
+
+I accidentally assigned `error_r` using both blocking (`=`) and non-blocking (`<=`). Verilator correctly flagged this because a signal should only be driven one way.
+
+**Solution**
+
+I moved all updates to `error_r` into the sequential `always_ff` block and created a separate combinational signal (`addr_valid`) for the address check.
+
+---
+
+### Read Data Always Returned Zero
+
+**Issue**
+
+The write operation completed successfully, but every read returned `0`.
+
+**Cause**
+
+`bus.rdata` was being reset to `'0'` inside `always_comb` every cycle. By the time the FSM reached the `DONE` state, the read data had already been overwritten.
+
+**Solution**
+
+I added a registered signal (`rdata_r`) that stores the read data during the `ACCESS` state and keeps it valid until the transaction finishes.
+
+---
+
+## Verification Results
+
+```text
+t=85  addr=3 write=1 rdata=0  valid=1 error=0
+t=135 addr=3 write=0 rdata=a5 valid=1 error=0
+```
+
+### Verification Summary
+
+| Test | Expected | Result |
+|------|----------|--------|
+| Write `0xA5` to register 3 | Write succeeds | ✅ Pass |
+| Read register 3 | `0xA5` | ✅ Pass |
+| Handshake signals | `valid=1`, `error=0` | ✅ Pass |
+
+The write completed successfully, and the value `0xA5` was read back correctly from register 3.
+
+---
+
+## Reflection
+
+This week felt like a step up in complexity compared to the previous modules. The FSM itself wasn't the hardest part—the real challenge was debugging timing issues and understanding why signals behaved differently across clock cycles.
+
+The readback bug took the longest to figure out. At first, I thought something was wrong with the register file, but tracing the signals showed the data was being cleared before the transaction finished. Fixing that helped me better understand the difference between combinational and sequential logic.
+
+I also wrote my first class-based SystemVerilog testbench. It required more setup than a procedural testbench, but I can already see how much easier it will be to extend as OpenTransformer grows.
+
+After everything was working, I updated the documentation, committed the changes, and pushed the latest version to GitHub.
+
+---
+
+## Next Steps
+
+- Add verification for invalid addresses and error handling.
+- Expand the class-based testbench with additional randomized transactions.
+- Begin Week 2 by implementing the UART core and AXI-Lite register interface.
+
+
+
