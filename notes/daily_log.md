@@ -533,3 +533,110 @@ After everything was working, I updated the documentation, committed the changes
 
 
 
+
+
+# August 17, 2026 --- Parameterized MAC Unit
+
+### Goal
+
+Started the compute-engine stage of OpenTransformer by designing and
+verifying a parameterized Multiply-Accumulate (MAC) unit.
+
+The MAC performs:
+
+`acc = acc + (a * b)`
+
+This will become the main arithmetic building block for the
+processing-element (PE) array and matrix-multiplication accelerator.
+
+### RTL Design
+
+Created `rtl/mac.sv`.
+
+The MAC includes: - Parameterized `DATA_WIDTH` (default: 8 bits) -
+Parameterized `ACC_WIDTH` (default: 32 bits) - Active-low asynchronous
+reset (`rst_n`) - `clear` control to reset the accumulator - `enable`
+control to perform or pause accumulation - Sequential accumulator using
+`always_ff`
+
+Control priority:
+
+`Reset > Clear > Enable`
+
+When enabled:
+
+`acc <= acc + (a * b)`
+
+When enable is low, the accumulator holds its previous value.
+
+### Verification
+
+Created `tb/tb_mac.sv` and tested the MAC using Verilator.
+
+Tests: 1. Reset test 2. Multiply test: `4 * 3 = 12` 3. Accumulation
+test: `12 + (2 * 5) = 22` 4. Clear test: accumulator returned to 0 5.
+Enable/hold test
+
+Simulation results:
+
+``` text
+RESET TEST PASS
+MULTIPLY TEST PASS
+ACCUMULATE TEST PASS
+CLEAR TEST PASS
+HOLD TEST PASS
+```
+
+All tests passed.
+
+### Debugging / Review
+
+Reviewed and practiced: - Module and port declarations - Bit widths such
+as `[7:0]` - Parameterized widths using `[WIDTH-1:0]` - `always_ff` -
+Non-blocking assignments (`<=`) - Active-low reset behavior - Testbench
+clock generation - Waiting for `posedge clk` - Automatic PASS/FAIL
+checks
+
+Fixed several issues during development: - Missing `end` statements -
+Incorrect parameter-list syntax - Missing control inputs - Accidentally
+mixing MAC RTL and testbench code - Module-name mismatch between RTL and
+testbench - Corrected the clear test to check `acc` instead of only
+checking the `clear` input
+
+### Synthesis
+
+Synthesized `rtl/mac.sv` successfully using Yosys.
+
+Yosys statistics:
+
+``` text
+Number of wires:             12
+Number of wire bits:        181
+Number of public wires:       7
+Number of public wire bits:  52
+Number of cells:              6
+
+$add          1
+$adffe        1
+$mul          1
+$mux          2
+$reduce_bool  1
+```
+
+The synthesized design contains the expected MAC hardware: - 1
+multiplier - 1 adder - 1 registered accumulator - Control/multiplexer
+logic
+
+### Result
+
+The first compute block for OpenTransformer is complete.
+
+`MAC RTL -> Verification -> Synthesis`
+
+All stages passed successfully.
+
+### Next Steps
+
+-   Build a Processing Element (PE) around the MAC
+-   Verify the PE independently
+-   Begin connecting multiple PEs into a 2x2 matrix-multiplication array
