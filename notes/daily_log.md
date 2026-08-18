@@ -640,3 +640,266 @@ All stages passed successfully.
 -   Build a Processing Element (PE) around the MAC
 -   Verify the PE independently
 -   Begin connecting multiple PEs into a 2x2 matrix-multiplication array
+
+# August 18, 2026 — Processing Element and 2×2 Systolic Array
+
+## Goal
+
+Continued the compute-engine stage of OpenTransformer by building a reusable Processing Element (PE) around the existing MAC and connecting four PEs into a 2×2 systolic array.
+
+The main goals were:
+
+- Reuse the verified parameterized MAC
+- Add registered A/B forwarding for systolic data movement
+- Verify PE compute, accumulation, clear, and hold behavior
+- Build a 2×2 PE array
+- Verify correct A-right / B-down dataflow
+- Perform the first complete 2×2 matrix multiplication
+
+---
+
+## Processing Element Design
+
+Created `rtl/pe.sv`.
+
+The PE contains:
+
+- Parameterized `DATA_WIDTH` (default: 8 bits)
+- Parameterized `ACC_WIDTH` (default: 32 bits)
+- Existing `mac` module instantiated internally
+- `a_in` and `b_in` data inputs
+- Registered `a_out` and `b_out` forwarding outputs
+- Local accumulator output `acc`
+- Shared `clk`, `rst_n`, `clear`, and `enable` controls
+
+The MAC performs:
+
+`acc <= acc + (a_in * b_in)`
+
+while the forwarding registers perform:
+
+`a_out <= a_in`
+
+`b_out <= b_in`
+
+when `enable` is high.
+
+This allows A values to move horizontally across the future PE array while B values move vertically.
+
+---
+
+## PE Verification
+
+Created `tb/tb_pe.sv`.
+
+Verified:
+
+- Compute + forward
+- Multi-cycle accumulation
+- Clear
+- Enable/hold
+
+Test sequence:
+
+1. `a_in = 4`, `b_in = 3`
+   - Expected `acc = 12`
+   - Expected `a_out = 4`
+   - Expected `b_out = 3`
+
+2. `a_in = 2`, `b_in = 5`
+   - Expected accumulated result: `12 + 10 = 22`
+
+3. Asserted `clear`
+   - Expected `acc = 0`
+
+4. Disabled `enable`
+   - Expected accumulator and forwarding registers to hold their previous values
+
+Simulation output:
+
+```text
+PE COMPUTE/FORWARD TEST PASS
+PE ACCUMULATE TEST PASS
+PE CLEAR TEST PASS
+PE HOLD TEST PASS
+```
+
+---
+
+## PE Synthesis
+
+Synthesized the PE using Yosys.
+
+Design hierarchy statistics:
+
+```text
+Number of wires:                 21
+Number of wire bits:            249
+Number of public wires:          16
+Number of public wire bits:     120
+Number of memories:               0
+Number of memory bits:            0
+Number of processes:              0
+Number of cells:                  8
+  $add                            1
+  $adffe                          3
+  $mul                            1
+  $mux                            2
+  $reduce_bool                    1
+```
+
+The synthesized PE contains:
+
+- 1 multiplier
+- 1 adder
+- 1 accumulator register
+- 2 forwarding registers
+- MAC control logic
+
+Result: PE simulation and synthesis passed.
+
+---
+
+## 2×2 Systolic Array Design
+
+Created `rtl/pe_array_2x2.sv`.
+
+The array contains four PE instances:
+
+```text
+                 b_col0              b_col1
+                    ↓                   ↓
+a_row0 ──────► [ PE00 ] ──────► [ PE01 ]
+                    ↓                   ↓
+                    ↓                   ↓
+a_row1 ──────► [ PE10 ] ──────► [ PE11 ]
+```
+
+Data movement:
+
+- A values move right
+- B values move down
+
+Internal PE connections:
+
+```text
+PE00.a_out -> PE01.a_in
+PE00.b_out -> PE10.b_in
+
+PE10.a_out -> PE11.a_in
+PE01.b_out -> PE11.b_in
+```
+
+The array exposes four accumulator outputs:
+
+```text
+acc00
+acc01
+acc10
+acc11
+```
+
+Edge forwarding outputs are also exposed so the array can later be extended or tiled into larger structures.
+
+---
+
+## Array Linting
+
+Ran Verilator lint on:
+
+```text
+rtl/mac.sv
+rtl/pe.sv
+rtl/pe_array_2x2.sv
+```
+
+Fixed:
+
+- Internal signal declarations accidentally placed inside the module port list
+- Duplicate `pe10` instance name
+- Unused edge signals by exposing the right and bottom edge outputs
+- Minor port-list syntax issues
+
+Final Verilator lint completed cleanly.
+
+---
+
+## First 2×2 Matrix Multiplication
+
+Created `tb/tb_pe_array_2x2.sv`.
+
+Test matrices:
+
+```text
+A = [ 1  2 ]
+    [ 3  4 ]
+
+B = [ 5  6 ]
+    [ 7  8 ]
+```
+
+Expected result:
+
+```text
+C = A × B
+
+C = [ 19  22 ]
+    [ 43  50 ]
+```
+
+Calculations:
+
+```text
+C00 = 1×5 + 2×7 = 19
+C01 = 1×6 + 2×8 = 22
+C10 = 3×5 + 4×7 = 43
+C11 = 3×6 + 4×8 = 50
+```
+
+Because the design is systolic, matrix values were staggered across clock cycles so that A values moved right and B values moved down at the correct time.
+
+Simulation output:
+
+```text
+2x2 MATRIX MULTIPLY TEST PASS
+Edge outputs: a_right0=0 a_right1=4 b_bottom0=0 b_bottom1=8
+2x2 ARRAY CLEAR TEST PASS
+```
+
+The array produced the correct result:
+
+```text
+[ 19  22 ]
+[ 43  50 ]
+```
+
+---
+
+## Result
+
+Completed both the Processing Element and the first 2×2 systolic array.
+
+Current compute hierarchy:
+
+```text
+MAC
+ ↓
+PE
+ ↓
+2×2 PE Array
+ ↓
+2×2 Matrix Multiplication
+```
+
+The project now has a working multi-PE compute structure capable of performing a complete matrix multiplication using systolic data movement.
+
+---
+
+## Next Steps
+
+- Add more 2×2 matrix test cases
+- Test zero values and additional edge cases
+- Add randomized 2×2 verification
+- Synthesize the complete 2×2 array
+- Begin scaling the architecture toward a 4×4 PE array
+
