@@ -903,3 +903,226 @@ The project now has a working multi-PE compute structure capable of performing a
 - Synthesize the complete 2×2 array
 - Begin scaling the architecture toward a 4×4 PE array
 
+## August 19, 2026 — 4×4 Systolic Array and Tiled 16×16 Matrix Multiply
+
+### Goal
+
+Expanded the OpenTransformer compute engine from the 2×2 systolic array to a 4×4 physical array, then built a tiling controller that allows the same hardware to perform a virtual 16×16 matrix multiplication.
+
+### 4×4 Systolic Array
+
+Created `rtl/pe_array_4x4.sv`.
+
+The array contains 16 processing elements arranged as:
+
+```text
+                 B0        B1        B2        B3
+                 ↓         ↓         ↓         ↓
+
+A0 ──────────► [PE00] ─► [PE01] ─► [PE02] ─► [PE03]
+                 ↓         ↓         ↓         ↓
+A1 ──────────► [PE10] ─► [PE11] ─► [PE12] ─► [PE13]
+                 ↓         ↓         ↓         ↓
+A2 ──────────► [PE20] ─► [PE21] ─► [PE22] ─► [PE23]
+                 ↓         ↓         ↓         ↓
+A3 ──────────► [PE30] ─► [PE31] ─► [PE32] ─► [PE33]
+```
+
+Dataflow remains:
+
+- A values move right.
+- B values move down.
+- Each PE performs multiply-accumulate operations locally.
+
+Used nested SystemVerilog `generate` loops to instantiate and connect all 16 PEs instead of manually creating each instance.
+
+The complete 4×4 RTL passed Verilator lint with no errors.
+
+### 4×4 Matrix Multiply Verification
+
+Created `tb/tb_pe_array_4x4.sv`.
+
+Tested:
+
+```text
+A =
+[  1   2   3   4 ]
+[  5   6   7   8 ]
+[  9  10  11  12 ]
+[ 13  14  15  16 ]
+
+B =
+[ 1 0 0 0 ]
+[ 0 1 0 0 ]
+[ 0 0 1 0 ]
+[ 0 0 0 1 ]
+```
+
+Since B is the identity matrix, the expected result was:
+
+```text
+C =
+[  1   2   3   4 ]
+[  5   6   7   8 ]
+[  9  10  11  12 ]
+[ 13  14  15  16 ]
+```
+
+Simulation result:
+
+```text
+4x4 MATRIX MULTIPLY TEST PASS
+
+[1 2 3 4]
+[5 6 7 8]
+[9 10 11 12]
+[13 14 15 16]
+
+4x4 ARRAY CLEAR TEST PASS
+```
+
+### 4×4 Synthesis
+
+Synthesized the complete array using Yosys.
+
+Design hierarchy:
+
+```text
+4×4 array
+└── 16 PEs
+    └── 16 MACs
+```
+
+Synthesis results:
+
+```text
+16 multipliers
+16 adders
+48 register cells
+32 muxes
+16 reduce_bool cells
+128 total cells
+```
+
+This confirmed that all 16 MAC datapaths were preserved through synthesis.
+
+### Tile Controller
+
+Created `rtl/tile_controller.sv`.
+
+The controller reuses the physical 4×4 systolic array to calculate larger matrix operations.
+
+A 16×16 matrix is divided into 4×4 tiles:
+
+```text
+[ T00 T01 T02 T03 ]
+[ T10 T11 T12 T13 ]
+[ T20 T21 T22 T23 ]
+[ T30 T31 T32 T33 ]
+```
+
+For one output tile:
+
+```text
+C00 =
+A00 × B00 +
+A01 × B10 +
+A02 × B20 +
+A03 × B30
+```
+
+The controller tracks:
+
+```text
+tile_row
+tile_col
+k_tile
+cycle_count
+```
+
+It sequences the systolic array through the required tile multiplications while keeping the partial products accumulated.
+
+The tile controller passed Verilator lint cleanly.
+
+### Virtual 16×16 Matrix Multiply
+
+Created `rtl/matmul_16x16.sv`.
+
+The module combines:
+
+```text
+16×16 input storage
+        ↓
+tile controller
+        ↓
+physical 4×4 systolic array
+        ↓
+16×16 result storage
+```
+
+The same 16 physical PEs are reused across the matrix instead of creating a physical 16×16 array.
+
+A complete 16×16 multiply requires:
+
+```text
+16 output tiles
+×
+4 K-tile operations per output tile
+=
+64 physical 4×4 tile operations
+```
+
+### 16×16 Verification
+
+Created `tb/tb_matmul_16x16.sv`.
+
+Test matrices used:
+
+```text
+A[r][c] = r + c + 1
+B[r][c] = 1
+```
+
+For each output row:
+
+```text
+C[r][c] = 16r + 136
+```
+
+The testbench loaded both complete 16×16 matrices, started the accelerator, waited for the tiled computation to finish, and checked every result.
+
+Simulation result:
+
+```text
+16x16 MATRIX MULTIPLY TEST PASS
+All 256 outputs correct
+```
+
+### Result
+
+The OpenTransformer compute engine now supports a verified tiled 16×16 matrix multiplication using a physical 4×4 systolic array.
+
+Current compute hierarchy:
+
+```text
+MAC
+ ↓
+PE
+ ↓
+2×2 systolic array
+ ↓
+4×4 systolic array
+ ↓
+tiled 16×16 matrix multiply
+```
+
+All 256 outputs from the 16×16 verification matched the expected results.
+
+### Next Steps
+
+- Integrate the compute engine with the FPGA target.
+- Measure FPGA resource usage and timing.
+- Run the matrix multiply on physical hardware.
+- Collect performance results for analysis.
+
+
