@@ -1124,5 +1124,145 @@ All 256 outputs from the 16×16 verification matched the expected results.
 - Measure FPGA resource usage and timing.
 - Run the matrix multiply on physical hardware.
 - Collect performance results for analysis.
+## August 21, 2026 — FPGA Resource Optimization
+
+### Goal
+
+Move the tiled 16×16 matrix-multiply engine toward the Tang Nano 9K by reducing FPGA resource usage enough for the design to fit on the device.
+
+### Initial FPGA Synthesis
+
+The tiled 16×16 accelerator was already working correctly in simulation, but the first FPGA implementation was far too large for the Tang Nano 9K.
+
+Initial place-and-route attempts showed roughly:
+
+```text
+~190% LUT usage
+>150% register usage
+```
+
+The design was logically correct, but it could not physically fit on the target FPGA.
+
+### Main Problem
+
+The biggest issue was the result memory.
+
+The 16×16 output matrix stores 256 results, each 32 bits wide. Much of this storage was being implemented with general-purpose logic and flip-flops instead of dedicated FPGA memory.
+
+That caused extremely high LUT and register usage.
+
+### DSP Mapping
+
+The synthesis toolchain was updated so the MAC multipliers could map into the Tang Nano 9K's dedicated multiplier hardware.
+
+After the update, synthesis correctly inferred:
+
+```text
+16 MULT9X9 blocks
+```
+
+This matched the 16 physical MAC datapaths in the 4×4 systolic array.
+
+### Result Memory Architecture Change
+
+The original design attempted to save all 16 outputs from a completed 4×4 tile at once.
+
+That required many parallel writes and prevented the result memory from mapping cleanly into block RAM.
+
+The controller was changed to save the tile serially:
+
+```text
+1 result per clock
+×
+16 clocks
+=
+16 saved outputs
+```
+
+A `save_index` now tracks which accumulator value is being written.
+
+The SAVE state lasts 16 cycles instead of one cycle.
+
+This keeps the 4×4 compute array unchanged while making the output memory much more FPGA-friendly.
+
+### Updated Controller Flow
+
+```text
+IDLE
+  ↓
+CLEAR
+  ↓
+RUN
+  ↓
+SAVE
+  ↓
+next tile / DONE
+```
+
+During `RUN`, the systolic array processes the required K-tile operations.
+
+During `SAVE`, one result is written to output memory each clock.
+
+### Block RAM Inference
+
+The output memory was marked for block RAM inference:
+
+```systemverilog
+(* ram_style = "block" *)
+logic [ACC_WIDTH-1:0] c_mem [0:255];
+```
+
+With the serial write architecture, the FPGA tools were able to map the result storage into dedicated memory.
+
+### Final FPGA Resource Usage
+
+After optimization, the design successfully fit on the Tang Nano 9K.
+
+```text
+LUT4:       4701 / 8640 = 54%
+DFF:        1851 / 6480 = 28%
+BSRAM:         1 / 26   = 3%
+MULT9X9:      16 / 40   = 40%
+```
+
+Additional resources:
+
+```text
+MUX2_LUT5: 700 / 4320 = 16%
+MUX2_LUT6: 254 / 2160 = 11%
+MUX2_LUT7:  81 / 1080 = 7%
+MUX2_LUT8:  33 / 1080 = 3%
+ALU:       610 / 6480 = 9%
+```
+
+The design went from being far too large for the FPGA to fitting with substantial room remaining.
+
+### What I Learned
+
+This milestone showed the difference between a design that is logically correct and one that is physically implementable.
+
+The matrix-multiply architecture worked in simulation before these changes, but the FPGA resource usage was not practical.
+
+Changing the memory access pattern had a major effect on the implementation without changing the matrix-multiply algorithm.
+
+The biggest lesson was that RTL structure directly affects how synthesis tools map a design into real hardware resources.
+
+### Result
+
+The tiled 16×16 matrix-multiply engine now fits on the Tang Nano 9K while preserving:
+
+```text
+4×4 physical systolic array
+16 Processing Elements
+16 hardware multipliers
+tiled 16×16 matrix multiplication
+```
+
+### Next Steps
+
+- Add the Tang Nano 9K top-level hardware interface.
+- Add board pin constraints.
+- Generate the FPGA bitstream.
+- Program the accelerator onto the physical board.
 
 
