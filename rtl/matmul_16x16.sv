@@ -22,7 +22,9 @@ module matmul_16x16 #(
 
     logic [DATA_WIDTH-1:0] a_mem [0:255];
     logic [DATA_WIDTH-1:0] b_mem [0:255];
-    logic [ACC_WIDTH-1:0]  c_mem [0:255];
+
+    (* ram_style = "block" *)
+    logic [ACC_WIDTH-1:0] c_mem [0:255];
 
     logic clear_array;
     logic enable_array;
@@ -31,7 +33,9 @@ module matmul_16x16 #(
     logic [1:0] tile_row;
     logic [1:0] tile_col;
     logic [1:0] k_tile;
+
     logic [3:0] cycle_count;
+    logic [3:0] save_index;
 
     logic [DATA_WIDTH-1:0] a_row0;
     logic [DATA_WIDTH-1:0] a_row1;
@@ -63,6 +67,9 @@ module matmul_16x16 #(
     logic [ACC_WIDTH-1:0] acc32;
     logic [ACC_WIDTH-1:0] acc33;
 
+    logic [7:0] c_addr;
+    logic [ACC_WIDTH-1:0] c_write_data;
+
     tile_controller controller (
         .clk(clk),
         .rst_n(rst_n),
@@ -78,7 +85,9 @@ module matmul_16x16 #(
         .tile_row(tile_row),
         .tile_col(tile_col),
         .k_tile(k_tile),
-        .cycle_count(cycle_count)
+
+        .cycle_count(cycle_count),
+        .save_index(save_index)
     );
 
     pe_array_4x4 #(
@@ -128,28 +137,52 @@ module matmul_16x16 #(
             else
                 a_mem[{load_row, load_col}] <= load_data;
         end
+    end
 
+    always_comb begin
+        case (save_index)
+            4'd0:  c_write_data = acc00;
+            4'd1:  c_write_data = acc01;
+            4'd2:  c_write_data = acc02;
+            4'd3:  c_write_data = acc03;
+
+            4'd4:  c_write_data = acc10;
+            4'd5:  c_write_data = acc11;
+            4'd6:  c_write_data = acc12;
+            4'd7:  c_write_data = acc13;
+
+            4'd8:  c_write_data = acc20;
+            4'd9:  c_write_data = acc21;
+            4'd10: c_write_data = acc22;
+            4'd11: c_write_data = acc23;
+
+            4'd12: c_write_data = acc30;
+            4'd13: c_write_data = acc31;
+            4'd14: c_write_data = acc32;
+            4'd15: c_write_data = acc33;
+
+            default: c_write_data = '0;
+        endcase
+    end
+
+    always_comb begin
         if (save_result) begin
-            c_mem[{tile_row, 2'd0, tile_col, 2'd0}] <= acc00;
-            c_mem[{tile_row, 2'd0, tile_col, 2'd1}] <= acc01;
-            c_mem[{tile_row, 2'd0, tile_col, 2'd2}] <= acc02;
-            c_mem[{tile_row, 2'd0, tile_col, 2'd3}] <= acc03;
-
-            c_mem[{tile_row, 2'd1, tile_col, 2'd0}] <= acc10;
-            c_mem[{tile_row, 2'd1, tile_col, 2'd1}] <= acc11;
-            c_mem[{tile_row, 2'd1, tile_col, 2'd2}] <= acc12;
-            c_mem[{tile_row, 2'd1, tile_col, 2'd3}] <= acc13;
-
-            c_mem[{tile_row, 2'd2, tile_col, 2'd0}] <= acc20;
-            c_mem[{tile_row, 2'd2, tile_col, 2'd1}] <= acc21;
-            c_mem[{tile_row, 2'd2, tile_col, 2'd2}] <= acc22;
-            c_mem[{tile_row, 2'd2, tile_col, 2'd3}] <= acc23;
-
-            c_mem[{tile_row, 2'd3, tile_col, 2'd0}] <= acc30;
-            c_mem[{tile_row, 2'd3, tile_col, 2'd1}] <= acc31;
-            c_mem[{tile_row, 2'd3, tile_col, 2'd2}] <= acc32;
-            c_mem[{tile_row, 2'd3, tile_col, 2'd3}] <= acc33;
+            c_addr = {
+                tile_row,
+                save_index[3:2],
+                tile_col,
+                save_index[1:0]
+            };
+        end else begin
+            c_addr = {result_row, result_col};
         end
+    end
+
+    always_ff @(posedge clk) begin
+        if (save_result)
+            c_mem[c_addr] <= c_write_data;
+        else
+            result_data <= c_mem[c_addr];
     end
 
     always_comb begin
@@ -164,66 +197,117 @@ module matmul_16x16 #(
         b_col3 = '0;
 
         if (enable_array) begin
+
             case (cycle_count)
 
-                0: begin
-                    a_row0 = a_mem[{tile_row, 2'd0, k_tile, 2'd0}];
+                4'd0: begin
+                    a_row0 =
+                        a_mem[{tile_row, 2'd0, k_tile, 2'd0}];
 
-                    b_col0 = b_mem[{k_tile, 2'd0, tile_col, 2'd0}];
+                    b_col0 =
+                        b_mem[{k_tile, 2'd0, tile_col, 2'd0}];
                 end
 
-                1: begin
-                    a_row0 = a_mem[{tile_row, 2'd0, k_tile, 2'd1}];
-                    a_row1 = a_mem[{tile_row, 2'd1, k_tile, 2'd0}];
+                4'd1: begin
+                    a_row0 =
+                        a_mem[{tile_row, 2'd0, k_tile, 2'd1}];
 
-                    b_col0 = b_mem[{k_tile, 2'd1, tile_col, 2'd0}];
-                    b_col1 = b_mem[{k_tile, 2'd0, tile_col, 2'd1}];
+                    a_row1 =
+                        a_mem[{tile_row, 2'd1, k_tile, 2'd0}];
+
+                    b_col0 =
+                        b_mem[{k_tile, 2'd1, tile_col, 2'd0}];
+
+                    b_col1 =
+                        b_mem[{k_tile, 2'd0, tile_col, 2'd1}];
                 end
 
-                2: begin
-                    a_row0 = a_mem[{tile_row, 2'd0, k_tile, 2'd2}];
-                    a_row1 = a_mem[{tile_row, 2'd1, k_tile, 2'd1}];
-                    a_row2 = a_mem[{tile_row, 2'd2, k_tile, 2'd0}];
+                4'd2: begin
+                    a_row0 =
+                        a_mem[{tile_row, 2'd0, k_tile, 2'd2}];
 
-                    b_col0 = b_mem[{k_tile, 2'd2, tile_col, 2'd0}];
-                    b_col1 = b_mem[{k_tile, 2'd1, tile_col, 2'd1}];
-                    b_col2 = b_mem[{k_tile, 2'd0, tile_col, 2'd2}];
+                    a_row1 =
+                        a_mem[{tile_row, 2'd1, k_tile, 2'd1}];
+
+                    a_row2 =
+                        a_mem[{tile_row, 2'd2, k_tile, 2'd0}];
+
+                    b_col0 =
+                        b_mem[{k_tile, 2'd2, tile_col, 2'd0}];
+
+                    b_col1 =
+                        b_mem[{k_tile, 2'd1, tile_col, 2'd1}];
+
+                    b_col2 =
+                        b_mem[{k_tile, 2'd0, tile_col, 2'd2}];
                 end
 
-                3: begin
-                    a_row0 = a_mem[{tile_row, 2'd0, k_tile, 2'd3}];
-                    a_row1 = a_mem[{tile_row, 2'd1, k_tile, 2'd2}];
-                    a_row2 = a_mem[{tile_row, 2'd2, k_tile, 2'd1}];
-                    a_row3 = a_mem[{tile_row, 2'd3, k_tile, 2'd0}];
+                4'd3: begin
+                    a_row0 =
+                        a_mem[{tile_row, 2'd0, k_tile, 2'd3}];
 
-                    b_col0 = b_mem[{k_tile, 2'd3, tile_col, 2'd0}];
-                    b_col1 = b_mem[{k_tile, 2'd2, tile_col, 2'd1}];
-                    b_col2 = b_mem[{k_tile, 2'd1, tile_col, 2'd2}];
-                    b_col3 = b_mem[{k_tile, 2'd0, tile_col, 2'd3}];
+                    a_row1 =
+                        a_mem[{tile_row, 2'd1, k_tile, 2'd2}];
+
+                    a_row2 =
+                        a_mem[{tile_row, 2'd2, k_tile, 2'd1}];
+
+                    a_row3 =
+                        a_mem[{tile_row, 2'd3, k_tile, 2'd0}];
+
+                    b_col0 =
+                        b_mem[{k_tile, 2'd3, tile_col, 2'd0}];
+
+                    b_col1 =
+                        b_mem[{k_tile, 2'd2, tile_col, 2'd1}];
+
+                    b_col2 =
+                        b_mem[{k_tile, 2'd1, tile_col, 2'd2}];
+
+                    b_col3 =
+                        b_mem[{k_tile, 2'd0, tile_col, 2'd3}];
                 end
 
-                4: begin
-                    a_row1 = a_mem[{tile_row, 2'd1, k_tile, 2'd3}];
-                    a_row2 = a_mem[{tile_row, 2'd2, k_tile, 2'd2}];
-                    a_row3 = a_mem[{tile_row, 2'd3, k_tile, 2'd1}];
+                4'd4: begin
+                    a_row1 =
+                        a_mem[{tile_row, 2'd1, k_tile, 2'd3}];
 
-                    b_col1 = b_mem[{k_tile, 2'd3, tile_col, 2'd1}];
-                    b_col2 = b_mem[{k_tile, 2'd2, tile_col, 2'd2}];
-                    b_col3 = b_mem[{k_tile, 2'd1, tile_col, 2'd3}];
+                    a_row2 =
+                        a_mem[{tile_row, 2'd2, k_tile, 2'd2}];
+
+                    a_row3 =
+                        a_mem[{tile_row, 2'd3, k_tile, 2'd1}];
+
+                    b_col1 =
+                        b_mem[{k_tile, 2'd3, tile_col, 2'd1}];
+
+                    b_col2 =
+                        b_mem[{k_tile, 2'd2, tile_col, 2'd2}];
+
+                    b_col3 =
+                        b_mem[{k_tile, 2'd1, tile_col, 2'd3}];
                 end
 
-                5: begin
-                    a_row2 = a_mem[{tile_row, 2'd2, k_tile, 2'd3}];
-                    a_row3 = a_mem[{tile_row, 2'd3, k_tile, 2'd2}];
+                4'd5: begin
+                    a_row2 =
+                        a_mem[{tile_row, 2'd2, k_tile, 2'd3}];
 
-                    b_col2 = b_mem[{k_tile, 2'd3, tile_col, 2'd2}];
-                    b_col3 = b_mem[{k_tile, 2'd2, tile_col, 2'd3}];
+                    a_row3 =
+                        a_mem[{tile_row, 2'd3, k_tile, 2'd2}];
+
+                    b_col2 =
+                        b_mem[{k_tile, 2'd3, tile_col, 2'd2}];
+
+                    b_col3 =
+                        b_mem[{k_tile, 2'd2, tile_col, 2'd3}];
                 end
 
-                6: begin
-                    a_row3 = a_mem[{tile_row, 2'd3, k_tile, 2'd3}];
+                4'd6: begin
+                    a_row3 =
+                        a_mem[{tile_row, 2'd3, k_tile, 2'd3}];
 
-                    b_col3 = b_mem[{k_tile, 2'd3, tile_col, 2'd3}];
+                    b_col3 =
+                        b_mem[{k_tile, 2'd3, tile_col, 2'd3}];
                 end
 
                 default: begin
@@ -232,7 +316,5 @@ module matmul_16x16 #(
             endcase
         end
     end
-
-    assign result_data = c_mem[{result_row, result_col}];
-
+    
 endmodule

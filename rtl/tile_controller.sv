@@ -12,7 +12,8 @@ module tile_controller (
     output logic [1:0] tile_row,
     output logic [1:0] tile_col,
     output logic [1:0] k_tile,
-    output logic [3:0] cycle_count
+    output logic [3:0] cycle_count,
+    output logic [3:0] save_index
 );
 
     typedef enum logic [2:0] {
@@ -28,55 +29,69 @@ module tile_controller (
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             state       <= IDLE;
-            tile_row    <= 0;
-            tile_col    <= 0;
-            k_tile      <= 0;
-            cycle_count <= 0;
+            tile_row    <= 2'd0;
+            tile_col    <= 2'd0;
+            k_tile      <= 2'd0;
+            cycle_count <= 4'd0;
+            save_index  <= 4'd0;
         end else begin
+
             case (state)
 
                 IDLE: begin
-                    tile_row    <= 0;
-                    tile_col    <= 0;
-                    k_tile      <= 0;
-                    cycle_count <= 0;
+                    tile_row    <= 2'd0;
+                    tile_col    <= 2'd0;
+                    k_tile      <= 2'd0;
+                    cycle_count <= 4'd0;
+                    save_index  <= 4'd0;
 
                     if (start)
                         state <= CLEAR;
                 end
 
                 CLEAR: begin
-                    cycle_count <= 0;
-                    state <= RUN;
+                    cycle_count <= 4'd0;
+                    save_index  <= 4'd0;
+                    state       <= RUN;
                 end
 
                 RUN: begin
-                    if (cycle_count == 9) begin
-                        cycle_count <= 0;
+                    if (cycle_count == 4'd9) begin
+                        cycle_count <= 4'd0;
 
-                        if (k_tile == 3)
+                        if (k_tile == 2'd3) begin
+                            save_index <= 4'd0;
                             state <= SAVE;
-                        else
-                            k_tile <= k_tile + 1;
+                        end else begin
+                            k_tile <= k_tile + 2'd1;
+                        end
                     end else begin
-                        cycle_count <= cycle_count + 1;
+                        cycle_count <= cycle_count + 4'd1;
                     end
                 end
 
                 SAVE: begin
-                    k_tile <= 0;
+                    if (save_index == 4'd15) begin
+                        save_index <= 4'd0;
+                        k_tile <= 2'd0;
 
-                    if (tile_row == 3 && tile_col == 3) begin
-                        state <= DONE;
-                    end else begin
-                        if (tile_col == 3) begin
-                            tile_col <= 0;
-                            tile_row <= tile_row + 1;
+                        if ((tile_row == 2'd3) &&
+                            (tile_col == 2'd3)) begin
+                            state <= DONE;
                         end else begin
-                            tile_col <= tile_col + 1;
+
+                            if (tile_col == 2'd3) begin
+                                tile_col <= 2'd0;
+                                tile_row <= tile_row + 2'd1;
+                            end else begin
+                                tile_col <= tile_col + 2'd1;
+                            end
+
+                            state <= CLEAR;
                         end
 
-                        state <= CLEAR;
+                    end else begin
+                        save_index <= save_index + 4'd1;
                     end
                 end
 
@@ -84,41 +99,45 @@ module tile_controller (
                     state <= IDLE;
                 end
 
-                default: state <= IDLE;
+                default: begin
+                    state <= IDLE;
+                end
 
             endcase
         end
     end
 
     always_comb begin
-        clear_array  = 0;
-        enable_array = 0;
-        save_result  = 0;
-        busy         = 0;
-        done         = 0;
+        clear_array  = 1'b0;
+        enable_array = 1'b0;
+        save_result  = 1'b0;
+        busy         = 1'b0;
+        done         = 1'b0;
 
         case (state)
+
             CLEAR: begin
-                busy = 1;
-                clear_array = 1;
+                busy = 1'b1;
+                clear_array = 1'b1;
             end
 
             RUN: begin
-                busy = 1;
-                enable_array = 1;
+                busy = 1'b1;
+                enable_array = 1'b1;
             end
 
             SAVE: begin
-                busy = 1;
-                save_result = 1;
+                busy = 1'b1;
+                save_result = 1'b1;
             end
 
             DONE: begin
-                done = 1;
+                done = 1'b1;
             end
 
             default: begin
             end
+
         endcase
     end
 
