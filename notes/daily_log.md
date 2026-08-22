@@ -1265,4 +1265,145 @@ tiled 16×16 matrix multiplication
 - Generate the FPGA bitstream.
 - Program the accelerator onto the physical board.
 
+## August 22, 2026 — Tang Nano 9K Hardware Integration
+
+### Goal
+
+Move OpenTransformer from an FPGA-ready design into a complete Tang Nano 9K hardware build that can be programmed onto the physical board.
+
+### FPGA Top-Level Integration
+
+Added a dedicated FPGA top-level module to connect the tiled 16×16 matrix-multiply engine to the Tang Nano 9K board.
+
+The top level connects:
+
+```text
+PC
+ ↓
+UART
+ ↓
+FPGA control logic
+ ↓
+16×16 tiled matrix-multiply engine
+```
+
+The matrix-multiply core remains the same compute architecture:
+
+```text
+4×4 physical systolic array
+16 Processing Elements
+16 MAC datapaths
+tiled 16×16 matrix multiplication
+```
+
+### UART Hardware Interface
+
+Added UART receive and transmit logic inside the FPGA top-level module.
+
+The receive path accepts bytes from the computer and loads matrix data into the accelerator.
+
+The transmit path sends result data back toward the computer after the accelerator finishes.
+
+The communication path uses:
+
+```text
+115200 baud
+27 MHz FPGA clock
+```
+
+The UART interface is communication glue around the accelerator rather than part of the compute architecture itself.
+
+### FPGA Control Flow
+
+The FPGA wrapper manages the full hardware sequence:
+
+```text
+wait for packet
+ ↓
+load Matrix A
+ ↓
+load Matrix B
+ ↓
+start accelerator
+ ↓
+wait for computation
+ ↓
+prepare result data
+ ↓
+transmit results
+```
+
+Because the result memory uses synchronous reads, the controller includes a read-wait stage before latching each result for transmission.
+
+### Tang Nano 9K Constraints
+
+Added board constraints for:
+
+```text
+27 MHz clock
+UART TX
+UART RX
+active-low reset
+```
+
+The design targets the Gowin GW1NR-9 device on the Tang Nano 9K.
+
+### FPGA Bitstream Generation
+
+Ran synthesis, place-and-route, and bitstream generation for the complete hardware design.
+
+The resource-optimized accelerator successfully fit on the FPGA and produced a final `.fs` bitstream.
+
+The implementation preserved the 16 dedicated hardware multipliers used by the physical 4×4 systolic array.
+
+### Board Detection
+
+Connected the Tang Nano 9K to the computer and verified the JTAG connection.
+
+The FPGA was detected as:
+
+```text
+manufacturer: Gowin
+family: GW1N
+model: GW1N(R)-9C
+```
+
+### Programming the FPGA
+
+Programmed the generated bitstream into the Tang Nano 9K SRAM.
+
+Programming completed successfully:
+
+```text
+Load SRAM: 100%
+Done
+CRC check: Success
+```
+
+At this point, OpenTransformer was no longer only a simulation or synthesized netlist.
+
+The accelerator was physically configured onto the FPGA.
+
+### Result
+
+The OpenTransformer compute engine is now integrated with the Tang Nano 9K and successfully programmed onto real FPGA hardware.
+
+Current hardware path:
+
+```text
+Computer
+ ↓
+UART
+ ↓
+Tang Nano 9K
+ ↓
+OpenTransformer accelerator
+```
+
+### Next Steps
+
+- Send complete 16×16 matrices from the computer to the FPGA.
+- Receive all 256 results back from the board.
+- Compare FPGA outputs against a software reference.
+- Verify the complete PC → FPGA → PC path.
 
