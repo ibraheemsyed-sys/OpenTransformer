@@ -1406,4 +1406,176 @@ OpenTransformer accelerator
 - Receive all 256 results back from the board.
 - Compare FPGA outputs against a software reference.
 - Verify the complete PC → FPGA → PC path.
+## August 23, 2026 — End-to-End FPGA Matrix Multiply Verification
+
+### Goal
+
+Verify the complete OpenTransformer hardware path by sending two full 16×16 matrices from the computer to the Tang Nano 9K, running the tiled matrix multiplication on the FPGA, receiving all 256 results back, and comparing them against a software reference.
+
+### Host-Side Test Program
+
+Added a small Python host program to communicate with the FPGA over UART.
+
+The program:
+
+```text
+selects the serial port
+ ↓
+creates or accepts two 16×16 matrices
+ ↓
+sends Matrix A and Matrix B to the FPGA
+ ↓
+waits for the FPGA response
+ ↓
+receives 256 32-bit results
+ ↓
+computes the same matrix multiply in software
+ ↓
+compares every FPGA result
+```
+
+AI assistance was used for parts of the host-side Python and bring-up/debugging tooling, while the full communication path and hardware behavior were tested against the physical FPGA.
+
+### UART Packet Flow
+
+The computer sends:
+
+```text
+0xA5 header
+256 bytes — Matrix A
+256 bytes — Matrix B
+```
+
+Both input matrices are sent in row-major order using 8-bit values.
+
+After the accelerator finishes, the FPGA sends:
+
+```text
+0x5A header
+256 × 32-bit output values
+```
+
+The result values are transmitted little-endian.
+
+### Hardware Compute Path
+
+The matrix multiplication is performed by the FPGA accelerator:
+
+```text
+16×16 Matrix A + 16×16 Matrix B
+        ↓
+4×4 physical systolic array
+        ↓
+16 Processing Elements
+        ↓
+tiled hardware reuse
+        ↓
+16×16 Matrix C
+```
+
+The physical array contains 16 PEs, and the tile controller reuses them across the larger operation.
+
+### Verification Test
+
+For the first end-to-end hardware test:
+
+```text
+A[r][c] = r + c + 1
+B[r][c] = 1
+```
+
+The expected output is:
+
+```text
+C[r][c] = 16r + 136
+```
+
+The host program sends both matrices to the FPGA and compares every returned value against a software matrix multiplication.
+
+### Real FPGA Result
+
+Verification result:
+
+```text
+PASS - all 256 outputs correct
+```
+
+Example rows:
+
+```text
+136 136 136 ... 136
+152 152 152 ... 152
+168 168 168 ... 168
+...
+376 376 376 ... 376
+```
+
+All 256 FPGA outputs matched the expected software results.
+
+### End-to-End Timing
+
+Measured total communication and execution time:
+
+```text
+PC → FPGA → PC: 135.14 ms
+```
+
+This includes UART transfer, FPGA control overhead, matrix computation, and host-side communication.
+
+The 135.14 ms measurement is therefore not the accelerator-only compute latency. At 115200 baud, UART transfer dominates much of the end-to-end time.
+
+### Full Verified Path
+
+```text
+PC
+ ↓
+UART
+ ↓
+Tang Nano 9K
+ ↓
+4×4 systolic array
+ ↓
+tiled 16×16 matrix multiplication
+ ↓
+result memory
+ ↓
+UART
+ ↓
+PC
+ ↓
+software comparison
+ ↓
+256 / 256 correct
+```
+
+### Result
+
+OpenTransformer has now completed a verified 16×16 matrix multiplication on physical FPGA hardware.
+
+The project has progressed through:
+
+```text
+MAC
+ ↓
+Processing Element
+ ↓
+2×2 systolic array
+ ↓
+4×4 systolic array
+ ↓
+tiled 16×16 matrix multiply
+ ↓
+FPGA implementation
+ ↓
+end-to-end hardware verification
+```
+
+### Next Steps
+
+- Measure accelerator-only cycle count and compute latency.
+- Calculate throughput and effective MAC performance.
+- Analyze FPGA resource efficiency.
+- Separate communication overhead from compute time.
+- Create figures and tables from the implementation results.
+- Begin the IEEE-style OpenTransformer paper.
 
