@@ -1,92 +1,163 @@
 # OpenTransformer
 
-A personal hardware design project exploring how transformer-based machine learning workloads can be mapped into digital hardware using SystemVerilog.
+OpenTransformer is an independent hardware design project exploring how matrix-multiply workloads used in machine learning can be mapped into digital hardware.
 
-## Motivation
+The current milestone is a **4x4 physical systolic array** built in SystemVerilog. The 4x4 array is reused through a tile controller to perform a larger **16x16 matrix multiplication** workload.
 
-I started OpenTransformer to better understand the connection between machine learning algorithms and the hardware that executes them. My goal is to learn computer architecture and hardware acceleration by building digital components step by step, starting from basic logic and gradually moving toward more complex hardware systems.
+Important distinction: this is **not** a physical 16x16 array. It is a 4x4 hardware array that executes a 16x16 matrix multiply through tiling and reuse.
 
-This project focuses on understanding how data moves through hardware, how designs are verified, and the architectural decisions involved in building efficient computing systems.
+## Final Status
 
-## Current Progress
+| Area | Status |
+|---|---|
+| 4x4 systolic array RTL | Complete |
+| 16x16 tiled matrix multiply | Passing simulation |
+| Verilator lint | Passing, no warnings/errors in final lint log |
+| Yosys synthesis | Passing |
+| Tang Nano 9K FPGA artifact | Generated |
+| Final evidence bundle | Saved in `reports/final/` |
 
-This project is being developed incrementally, starting from basic digital logic and moving toward more complex hardware systems. Progress updates, implementation details, debugging notes, and simulation results are documented in the [Development Log](notes/daily_log.md).
+## Architecture Summary
 
-## Tools Used
+The design is built from small hardware blocks:
 
-- **Hardware Description Language:** SystemVerilog
-- **Simulation & Linting:** Verilator
-- **Waveform Analysis:** WaveTrace (VS Code Extension)
-- **Build System:** GNU Make
-- **Development Environment:** Linux (WSL2/Codespaces)
+- `mac.sv` — multiply-accumulate unit
+- `pe.sv` — processing element built around the MAC
+- `pe_array_4x4.sv` — physical 4x4 systolic array with 16 PEs
+- `tile_controller.sv` — controller for tiled execution
+- `matmul_16x16.sv` — top-level 16x16 tiled matrix multiply design
+- `fpga_top.sv` — FPGA-facing wrapper
+
+Data moves through the 4x4 array in a systolic pattern. Instead of building 256 physical processing elements for a full 16x16 array, the design reuses 16 processing elements across multiple tiles.
+
+## Verification
+
+The final 16x16 matrix multiplication test was run with Verilator.
+
+Final result:
+
+| Test | Result |
+|---|---|
+| 16x16 matrix multiply | PASS |
+| Output checks | 256/256 correct |
+
+The final simulation log is saved here:
+
+- `reports/final/final_sim_16x16.log`
+
+## Lint and Synthesis
+
+Final lint was run with Verilator.
+
+- `reports/final/final_lint.log`
+
+Final synthesis was run with Yosys.
+
+- `reports/final/final_yosys_synth.log`
+
+Yosys successfully synthesized the hierarchy:
+
+- `matmul_16x16`
+  - `pe_array_4x4`
+    - 16 processing elements
+      - MAC units
+  - `tile_controller`
+
+Final Yosys design hierarchy statistics:
+
+| Metric | Value |
+|---|---:|
+| Wires | 5,983 |
+| Wire bits | 58,258 |
+| Public wires | 1,169 |
+| Public wire bits | 16,341 |
+| Memories | 0 |
+| Memory bits | 0 |
+| Processes | 0 |
+| Cells | 38,170 |
+
+Yosys reported array-to-register conversion warnings for internal unpacked bus structures in the 4x4 array. These warnings do not indicate a functional failure.
+
+## FPGA Evidence
+
+FPGA artifacts were generated for the Tang Nano 9K.
+
+Final FPGA evidence is saved in:
+
+- `reports/final/final_fpga_summary.md`
+- `reports/final/opent_final.fs`
+- `reports/final/opent_synth_final.json`
+- `reports/final/opent_pnr_final.json`
+- `reports/final/tangnano9k_final.cst`
+
+Resource counts extracted from `opent_pnr.json`:
+
+| Resource group | Count |
+|---|---:|
+| LUT group | 4,703 |
+| DFF group | 843 |
+| RAM16SDP4 | 168 |
+| MULT9X9 | 16 |
+| IO | 4 |
+
+The 16 `MULT9X9` blocks match the 16 processing elements in the 4x4 physical systolic array.
 
 ## Repository Structure
 
-```text
-.
-├── rtl/
-│   ├── alu_pkg.sv        # Shared ALU operation definitions
-│   ├── alu_8bit.sv       # 8-bit combinational ALU module
-│   └── and_gate.sv       # Initial toolchain verification module
-│
-├── tb/
-│   ├── tb_alu_8bit.sv    # ALU verification testbench
-│   └── tb_and_gate.sv    # AND gate verification testbench
-│
-├── sim/
-│   └── Makefile          # Simulation build commands
-│
-├── notes/
-│   └── daily_log.md      # Development notes and troubleshooting
-│
-└── README.md
-```
+    rtl/
+      mac.sv
+      pe.sv
+      pe_array_4x4.sv
+      tile_controller.sv
+      matmul_16x16.sv
+      fpga_top.sv
+      alu_8bit.sv
+      reg_file.sv
+      mmu_fsm.sv
 
-## Development Roadmap
+    tb/
+      tb_mac.sv
+      tb_pe.sv
+      tb_pe_array_4x4.sv
+      tb_matmul_16x16.sv
 
-OpenTransformer is being developed incrementally, starting with fundamental digital logic and gradually moving toward more advanced hardware architectures used in machine learning accelerators.
+    sim/
+      Makefile
 
-Planned development areas include:
+    fpga/
+      tangnano9k.cst
 
-### SystemVerilog & Verification Foundations
-- Build stronger SystemVerilog design practices
-- Explore sequential logic, registers, and state machines
-- Learn interfaces, modports, clocking blocks, and structured testbench design
-- Develop more advanced verification environments
+    reports/final/
+      final_sim_16x16.log
+      final_lint.log
+      final_yosys_synth.log
+      final_fpga_summary.md
+      opent_final.fs
+      opent_synth_final.json
+      opent_pnr_final.json
+      tangnano9k_final.cst
 
-### Hardware Design Components
-- Implement reusable hardware blocks such as:
-  - FIFOs and memory structures
-  - Communication interfaces
-  - Control logic and finite state machines
-  - Arithmetic datapath components
+    notes/
+      daily_log.md
 
-### Machine Learning Accelerator Exploration
-- Design fixed-point arithmetic units for ML workloads
-- Explore multiply-accumulate (MAC) structures
-- Study matrix computation architectures
-- Investigate systolic array designs and matrix tiling approaches used in neural network accelerators
+## Tools Used
 
-### Hardware Implementation
-- Learn ASIC synthesis concepts using tools such as Yosys
-- Explore hardware optimization and netlist generation
-- Experiment with FPGA synthesis and deployment using the Tang Nano 9K (GW1NR-9)
+- SystemVerilog
+- Verilator
+- Yosys
+- Tang Nano 9K FPGA flow
+- GTKWave / WaveTrace
+- GNU Make
+- Linux / Codespaces
 
-### Verification & Documentation
-- Build Python-based verification tools
-- Create reproducible simulation workflows
-- Document design decisions, benchmarks, and experiments
+## Project Goal
 
-## Long-Term Goals
+The goal of OpenTransformer is to learn hardware acceleration by building real digital systems step by step.
 
-The long-term goal of OpenTransformer is to develop a deeper understanding of how machine learning workloads are transformed into efficient hardware implementations.
+This project started from basic digital logic and grew into a tiled matrix-multiply accelerator. The focus is not just writing RTL, but verifying it, synthesizing it, testing it on FPGA, and documenting the engineering evidence clearly.
 
-Through this project, I aim to explore:
+## Current Milestone
 
-- Computer architecture
-- Digital design and verification
-- Hardware/software co-design
-- FPGA-based acceleration
-- Efficient computing systems for machine learning
+OpenTransformer has reached a working hardware-accelerator milestone:
 
-The focus is on learning through implementation: designing, testing, debugging, and improving hardware components while gradually moving toward larger accelerator architectures.
+A 4x4 physical systolic array with 16 processing elements successfully performs a 16x16 matrix multiplication workload through tiling and reuse.

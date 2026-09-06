@@ -6,6 +6,7 @@ module tb_matmul_16x16;
 
     logic load_we;
     logic load_b;
+
     logic [3:0] load_row;
     logic [3:0] load_col;
     logic [7:0] load_data;
@@ -41,7 +42,7 @@ module tb_matmul_16x16;
         .done(done)
     );
 
-    initial clk = 0;
+    initial clk = 1'b0;
     always #5 clk <= ~clk;
 
     task load_value(
@@ -57,32 +58,34 @@ module tb_matmul_16x16;
         load_row  = row;
         load_col  = col;
         load_data = data;
-        load_we   = 1;
+        load_we   = 1'b1;
 
         @(negedge clk);
 
-        load_we = 0;
+        load_we = 1'b0;
     end
     endtask
 
     initial begin
 
-        rst_n = 0;
-        start = 0;
+        rst_n = 1'b0;
+        start = 1'b0;
 
-        load_we   = 0;
-        load_b    = 0;
-        load_row  = 0;
-        load_col  = 0;
-        load_data = 0;
+        load_we   = 1'b0;
+        load_b    = 1'b0;
+        load_row  = 4'd0;
+        load_col  = 4'd0;
+        load_data = 8'd0;
 
-        result_row = 0;
-        result_col = 0;
+        result_row = 4'd0;
+        result_col = 4'd0;
 
         errors = 0;
 
-        repeat (2) @(posedge clk);
-        rst_n = 1;
+        repeat (2)
+            @(posedge clk);
+
+        rst_n = 1'b1;
 
         for (r = 0; r < 16; r = r + 1) begin
             for (c = 0; c < 16; c = c + 1) begin
@@ -107,15 +110,13 @@ module tb_matmul_16x16;
         end
 
         @(negedge clk);
-        start = 1;
+        start = 1'b1;
 
         @(negedge clk);
-        start = 0;
+        start = 1'b0;
 
         wait(busy == 1'b1);
         wait(done == 1'b1);
-
-        #1;
 
         for (r = 0; r < 16; r = r + 1) begin
 
@@ -123,12 +124,15 @@ module tb_matmul_16x16;
 
             for (c = 0; c < 16; c = c + 1) begin
 
+                @(negedge clk);
+
                 result_row = r[3:0];
                 result_col = c[3:0];
 
+                @(posedge clk);
                 #1;
 
-                if (result_data !== expected) begin
+                if (result_data !== expected[31:0]) begin
                     $display(
                         "FAIL C[%0d][%0d] expected=%0d got=%0d",
                         r,
