@@ -1,0 +1,5 @@
+=== FINAL VERILATOR LINT ===
+Sun Sep  6 22:05:03 UTC 2026
+989426f4a93c7883b1722a583059c732258c245d
+ tb/tb_matmul_16x16.sv | 42 +++++++++++++++++++++++-------------------
+ 1 file changed, 23 insertions(+), 19 deletions(-)

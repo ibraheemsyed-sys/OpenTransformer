@@ -1,0 +1,17 @@
+=== FPGA FILE CHECK ===
+Sun Sep  6 22:08:50 UTC 2026
+-rw-rw-rw- 1 codespace codespace  224 Aug 19 23:28 fpga/tangnano9k.cst
+-rw-rw-rw- 1 codespace codespace 3.4M Aug 19 23:48 opent.fs
+-rw-rw-rw- 1 codespace codespace 7.0M Aug 19 23:43 opent.json
+-rw-rw-rw- 1 codespace codespace 9.5M Aug 19 23:44 opent_pnr.json
+--- JSON quick scan ---
+
+FILE: opent.json
+size_bytes: 7337731
+top_keys: ['creator', 'modules']
+modules: ['$__ABC9_DELAY', '$__ABC9_SCC_BREAKER', '$__DFF_N__$abc9_flop', '$__DFF_P__$abc9_flop', "$paramod$__ABC9_DELAY\\DELAY=32'00000000000000000000000000111110", '$paramod$bf5d18c77bd32001a78ee8032ee8564d486f1b33\\RAM16SDP4', "$paramod\\ALU\\ALU_MODE=s32'00000000000000000000000000000010", 'ALU', 'ALU54D', 'BANDGAP', 'BUFG', 'BUFS', 'CLKDIV', 'CLKDIV2', 'DCS', 'DFF', 'DFFC', 'DFFCE', 'DFFE', 'DFFN']
+
+FILE: opent_pnr.json
+size_bytes: 9959515
+top_keys: ['creator', 'modules']
+modules: ['top']
