@@ -1578,4 +1578,83 @@ end-to-end hardware verification
 - Separate communication overhead from compute time.
 - Create figures and tables from the implementation results.
 - Begin the IEEE-style OpenTransformer paper.
+---
 
+# September 6, 2026 — Final Project Paper and OpenROAD Evidence
+
+## Goal
+
+Finish OpenTransformer as a complete documented milestone with final paper, repo cleanup, and physical-design evidence.
+
+## Final Work Completed
+
+Today I finished the final IEEE-style paper for OpenTransformer and connected the project results into one complete milestone.
+
+Paper files:
+
+- [Final paper PDF](../paper/open_transformer_ieee.pdf)
+- [LaTeX source](../paper/open_transformer_ieee.tex)
+
+Figures used in the paper:
+
+- [Architecture figure](../paper/figures/image1.png)
+- [Processing element datapath](../paper/figures/image2.png)
+- [OpenROAD chip layout](../paper/figures/chip_layout.png)
+
+## Final Project Result
+
+OpenTransformer now has:
+
+- verified 16x16 matrix multiplication using a 4x4 physical systolic array
+- 256 / 256 simulation outputs correct
+- final lint and synthesis evidence
+- Tang Nano 9K FPGA artifacts
+- completed OpenROAD routed layout and GDS for the 4x4 PE-array core
+- final 7-page IEEE-style paper
+
+## OpenROAD Result
+
+The completed OpenROAD result is for the 4x4 PE-array compute core, not the full 16x16 top-level controller design.
+
+Final OpenROAD PE-array results:
+
+| Metric | Result |
+|---|---:|
+| Design | pe_array_4x4 |
+| Platform | Nangate45 |
+| Clock target | 10 ns |
+| Final design area | 14,764 um^2 |
+| Final utilization | 31% |
+| Detail-route violations | 0 |
+| Antenna net violations | 0 |
+| Antenna pin violations | 0 |
+| Total routed wire length | 113,082 um |
+| Total vias | 52,211 |
+| Final GDS generated | Yes |
+
+OpenROAD layout preview:
+
+![OpenROAD Routed Layout](../paper/figures/chip_layout.png)
+
+Evidence files:
+
+- [OpenROAD summary](../reports/openroad/pe_array_final/OPENROAD_SUMMARY.md)
+- [Final GDS](../reports/openroad/pe_array_final/results/6_final.gds)
+- [Final DEF](../reports/openroad/pe_array_final/results/6_final.def)
+- [Final ODB](../reports/openroad/pe_array_final/results/6_final.odb)
+- [Artifact hashes](../reports/openroad/pe_array_final/SHA256SUMS.txt)
+
+## Important Note
+
+The full `matmul_16x16` OpenROAD run was attempted and reached CTS, but it did not complete the full route/signoff flow because the OpenROAD Docker run ended with an illegal-instruction crash.
+
+That partial result is saved here:
+
+- [Full top-level partial OpenROAD notes](../reports/openroad/full_top_partial/README.md)
+- [Full top-level CTS crash log](../reports/openroad/full_top_partial/matmul_16x16_openroad_cts_crash.log)
+
+## Final Status
+
+OpenTransformer is now a finished documented milestone.
+
+The project is ready to show as a hardware-design project because the claims are backed by RTL, simulation logs, synthesis reports, FPGA artifacts, OpenROAD layout evidence, and the final paper.

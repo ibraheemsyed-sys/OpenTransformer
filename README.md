@@ -1,98 +1,98 @@
 # OpenTransformer
 
-OpenTransformer is an independent hardware design project exploring how matrix-multiply workloads used in machine learning can be mapped into digital hardware.
+OpenTransformer is a SystemVerilog hardware accelerator project for tiled matrix multiplication.
 
-The current milestone is a **4x4 physical systolic array** built in SystemVerilog. The 4x4 array is reused through a tile controller to perform a larger **16x16 matrix multiplication** workload.
+The completed milestone uses a **4×4 physical systolic array** with **16 processing elements** and reuses it through tiling to compute a **16×16 matrix multiplication workload**.
 
-Important distinction: this is **not** a physical 16x16 array. It is a 4x4 hardware array that executes a 16x16 matrix multiply through tiling and reuse.
+> The workload is 16×16, but the physical compute array is 4×4.
 
-## Final Status
+---
 
-| Area | Status |
+## Final Paper
+
+- [Final IEEE-style paper PDF](paper/open_transformer_ieee.pdf)
+- [LaTeX source](paper/open_transformer_ieee.tex)
+
+---
+
+## Previews
+
+### Architecture
+
+![OpenTransformer Architecture](paper/figures/image1.png)
+
+### Processing Element Datapath
+
+![Processing Element Datapath](paper/figures/image2.png)
+
+### OpenROAD Routed Layout
+
+![OpenROAD Routed Layout](paper/figures/chip_layout.png)
+
+The layout image is from the completed OpenROAD physical-design flow for the `pe_array_4x4` compute core.
+
+---
+
+## Final Milestone Summary
+
+| Area | Result |
 |---|---|
-| 4x4 systolic array RTL | Complete |
-| 16x16 tiled matrix multiply | Passing simulation |
-| Verilator lint | Passing, no warnings/errors in final lint log |
-| Yosys synthesis | Passing |
-| Tang Nano 9K FPGA artifact | Generated |
-| Final evidence bundle | Saved in `reports/final/` |
+| RTL design | Complete |
+| Physical compute array | 4×4 systolic array |
+| Processing elements | 16 |
+| Matrix workload | 16×16 |
+| Simulation | 256 / 256 outputs correct |
+| Lint | Passed |
+| Yosys synthesis | Passed |
+| FPGA target | Tang Nano 9K |
+| FPGA artifacts | Generated |
+| OpenROAD target | Nangate45 |
+| OpenROAD completed block | `pe_array_4x4` |
+| Final routed layout | Generated |
+| Final GDS | Generated |
+| Final paper | 7-page IEEE-style PDF |
 
-## Architecture Summary
+---
 
-The design is built from small hardware blocks:
+## Main RTL Files
 
-- `mac.sv` — multiply-accumulate unit
-- `pe.sv` — processing element built around the MAC
-- `pe_array_4x4.sv` — physical 4x4 systolic array with 16 PEs
-- `tile_controller.sv` — controller for tiled execution
-- `matmul_16x16.sv` — top-level 16x16 tiled matrix multiply design
-- `fpga_top.sv` — FPGA-facing wrapper
-
-Data moves through the 4x4 array in a systolic pattern. Instead of building 256 physical processing elements for a full 16x16 array, the design reuses 16 processing elements across multiple tiles.
-
-## Verification
-
-The final 16x16 matrix multiplication test was run with Verilator.
-
-Final result:
-
-| Test | Result |
+| File | Purpose |
 |---|---|
-| 16x16 matrix multiply | PASS |
-| Output checks | 256/256 correct |
+| `rtl/mac.sv` | Multiply-accumulate unit |
+| `rtl/pe.sv` | Processing element |
+| `rtl/pe_array_4x4.sv` | 4×4 physical systolic array |
+| `rtl/tile_controller.sv` | Tile sequencing controller |
+| `rtl/matmul_16x16.sv` | Tiled 16×16 matrix multiply top |
+| `rtl/fpga_top.sv` | Tang Nano 9K FPGA wrapper |
 
-The final simulation log is saved here:
+Main testbench:
 
-- `reports/final/final_sim_16x16.log`
+- `tb/tb_matmul_16x16.sv`
 
-## Lint and Synthesis
+---
 
-Final lint was run with Verilator.
+## Verification Result
 
-- `reports/final/final_lint.log`
+The final top-level simulation verified the complete tiled 16×16 matrix multiplication design.
 
-Final synthesis was run with Yosys.
+```text
+16x16 MATRIX MULTIPLY TEST PASS
+All 256 outputs correct
+```
 
-- `reports/final/final_yosys_synth.log`
+Evidence:
 
-Yosys successfully synthesized the hierarchy:
+- [Final simulation log](reports/final/final_sim_16x16.log)
+- [Final lint log](reports/final/final_lint.log)
+- [Final Yosys synthesis log](reports/final/final_yosys_synth.log)
 
-- `matmul_16x16`
-  - `pe_array_4x4`
-    - 16 processing elements
-      - MAC units
-  - `tile_controller`
-
-Final Yosys design hierarchy statistics:
-
-| Metric | Value |
-|---|---:|
-| Wires | 5,983 |
-| Wire bits | 58,258 |
-| Public wires | 1,169 |
-| Public wire bits | 16,341 |
-| Memories | 0 |
-| Memory bits | 0 |
-| Processes | 0 |
-| Cells | 38,170 |
-
-Yosys reported array-to-register conversion warnings for internal unpacked bus structures in the 4x4 array. These warnings do not indicate a functional failure.
+---
 
 ## FPGA Evidence
 
-FPGA artifacts were generated for the Tang Nano 9K.
+The design produced Tang Nano 9K FPGA artifacts.
 
-Final FPGA evidence is saved in:
-
-- `reports/final/final_fpga_summary.md`
-- `reports/final/opent_final.fs`
-- `reports/final/opent_synth_final.json`
-- `reports/final/opent_pnr_final.json`
-- `reports/final/tangnano9k_final.cst`
-
-Resource counts extracted from `opent_pnr.json`:
-
-| Resource group | Count |
+| Resource Group | Count |
 |---|---:|
 | LUT group | 4,703 |
 | DFF group | 843 |
@@ -100,64 +100,71 @@ Resource counts extracted from `opent_pnr.json`:
 | MULT9X9 | 16 |
 | IO | 4 |
 
-The 16 `MULT9X9` blocks match the 16 processing elements in the 4x4 physical systolic array.
+Evidence:
 
-## Repository Structure
+- [FPGA summary](reports/final/final_fpga_summary.md)
+- [FPGA bitstream](reports/final/opent_final.fs)
+- [FPGA synthesis JSON](reports/final/opent_synth_final.json)
+- [FPGA PNR JSON](reports/final/opent_pnr_final.json)
+- [FPGA hashes](reports/final/final_fpga_hashes.txt)
 
-    rtl/
-      mac.sv
-      pe.sv
-      pe_array_4x4.sv
-      tile_controller.sv
-      matmul_16x16.sv
-      fpga_top.sv
-      alu_8bit.sv
-      reg_file.sv
-      mmu_fsm.sv
+---
 
-    tb/
-      tb_mac.sv
-      tb_pe.sv
-      tb_pe_array_4x4.sv
-      tb_matmul_16x16.sv
+## OpenROAD Physical Design
 
-    sim/
-      Makefile
+The completed OpenROAD result is for the **4×4 PE-array compute core**, `pe_array_4x4`.
 
-    fpga/
-      tangnano9k.cst
+The full `matmul_16x16` top-level OpenROAD run was attempted and documented, but it did not complete the full route/signoff flow. The completed routed/GDS result is for the compute core.
 
-    reports/final/
-      final_sim_16x16.log
-      final_lint.log
-      final_yosys_synth.log
-      final_fpga_summary.md
-      opent_final.fs
-      opent_synth_final.json
-      opent_pnr_final.json
-      tangnano9k_final.cst
+### Final OpenROAD Results
 
-    notes/
-      daily_log.md
+| Metric | Result |
+|---|---:|
+| Platform | Nangate45 |
+| Clock target | 10 ns |
+| Final design area | 14,764 µm² |
+| Final utilization | 31% |
+| Detail-route violations | 0 |
+| Antenna net violations | 0 |
+| Antenna pin violations | 0 |
+| Total routed wire length | 113,082 µm |
+| Total vias | 52,211 |
+| Final GDS generated | Yes |
 
-## Tools Used
+Evidence:
 
-- SystemVerilog
-- Verilator
-- Yosys
-- Tang Nano 9K FPGA flow
-- GTKWave / WaveTrace
-- GNU Make
-- Linux / Codespaces
+- [OpenROAD summary](reports/openroad/pe_array_final/OPENROAD_SUMMARY.md)
+- [Final GDS](reports/openroad/pe_array_final/results/6_final.gds)
+- [Final DEF](reports/openroad/pe_array_final/results/6_final.def)
+- [Final ODB](reports/openroad/pe_array_final/results/6_final.odb)
+- [OpenROAD hashes](reports/openroad/pe_array_final/SHA256SUMS.txt)
+- [OpenROAD reports](reports/openroad/pe_array_final/reports/)
+- [OpenROAD logs](reports/openroad/pe_array_final/logs/)
 
-## Project Goal
+Partial full-top OpenROAD evidence:
 
-The goal of OpenTransformer is to learn hardware acceleration by building real digital systems step by step.
+- [Full top-level partial OpenROAD README](reports/openroad/full_top_partial/README.md)
+- [Full top-level CTS crash log](reports/openroad/full_top_partial/matmul_16x16_openroad_cts_crash.log)
 
-This project started from basic digital logic and grew into a tiled matrix-multiply accelerator. The focus is not just writing RTL, but verifying it, synthesizing it, testing it on FPGA, and documenting the engineering evidence clearly.
+---
 
-## Current Milestone
+## Repository Map
 
-OpenTransformer has reached a working hardware-accelerator milestone:
+| Folder | Contents |
+|---|---|
+| `rtl/` | SystemVerilog RTL |
+| `tb/` | Testbenches |
+| `sim/` | Simulation/build support |
+| `fpga/` | FPGA constraints and board files |
+| `reports/final/` | Final simulation, lint, synthesis, and FPGA evidence |
+| `reports/openroad/` | OpenROAD physical-design evidence |
+| `paper/` | Final paper, figures, and PDF |
+| `notes/` | Development log |
 
-A 4x4 physical systolic array with 16 processing elements successfully performs a 16x16 matrix multiplication workload through tiling and reuse.
+---
+
+## Project Status
+
+OpenTransformer is a finished documented milestone.
+
+It demonstrates a tiled matrix-multiply accelerator built from a reusable 4×4 systolic array, verified at the RTL level, mapped to FPGA artifacts, and physically implemented through OpenROAD for the PE-array compute core.
