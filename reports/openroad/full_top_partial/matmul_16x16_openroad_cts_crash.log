@@ -1,0 +1,1142 @@
+OPENROAD: /OpenROAD-flow-scripts/tools/OpenROAD
+mkdir -p /work/results/nangate45/opentransformer/base/
+echo 10.000 > /work/results/nangate45/opentransformer/base/clock_period.txt
+/OpenROAD-flow-scripts/flow/scripts/synth.sh /OpenROAD-flow-scripts/flow/scripts/synth_canonicalize.tcl /work/logs/nangate45/opentransformer/base/1_1_yosys_canonicalize.log
+Using ABC speed script.
+Extracting clock period from SDC file: /work/results/nangate45/opentransformer/base/clock_period.txt
+Setting clock period to 10.000
+1. Executing Liberty frontend: /OpenROAD-flow-scripts/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib
+2. Executing Liberty frontend: /OpenROAD-flow-scripts/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib
+3. Executing Verilog-2005 frontend: /workspaces/OpenTransformer/rtl/mac.sv
+4. Executing Verilog-2005 frontend: /workspaces/OpenTransformer/rtl/pe.sv
+5. Executing Verilog-2005 frontend: /workspaces/OpenTransformer/rtl/pe_array_4x4.sv
+6. Executing Verilog-2005 frontend: /workspaces/OpenTransformer/rtl/tile_controller.sv
+7. Executing Verilog-2005 frontend: /workspaces/OpenTransformer/rtl/matmul_16x16.sv
+8. Executing Verilog-2005 frontend: /OpenROAD-flow-scripts/flow/platforms/nangate45/cells_clkgate.v
+9. Executing HIERARCHY pass (managing design hierarchy).
+10. Executing AST frontend in derive mode using pre-parsed AST for module `\matmul_16x16'.
+10.1. Analyzing design hierarchy..
+10.2. Executing AST frontend in derive mode using pre-parsed AST for module `\pe_array_4x4'.
+Warning: Replacing memory \b_bus with list of registers. See /workspaces/OpenTransformer/rtl/pe_array_4x4.sv:56
+Warning: Replacing memory \a_bus with list of registers. See /workspaces/OpenTransformer/rtl/pe_array_4x4.sv:50
+10.3. Executing AST frontend in derive mode using pre-parsed AST for module `\tile_controller'.
+10.4. Analyzing design hierarchy..
+10.5. Executing AST frontend in derive mode using pre-parsed AST for module `\pe'.
+Warning: Replacing memory \acc_bus with list of registers. See /workspaces/OpenTransformer/rtl/pe_array_4x4.sv:82
+10.6. Analyzing design hierarchy..
+10.7. Analyzing design hierarchy..
+10.8. Executing AST frontend in derive mode using pre-parsed AST for module `\mac'.
+10.9. Analyzing design hierarchy..
+10.10. Analyzing design hierarchy..
+11. Executing OPT_CLEAN pass (remove unused cells and wires).
+Warning: Ignoring module $paramod$8392c0aee371eac30cfcd917af9a6c37ac869d3e\pe_array_4x4 because it contains processes (run 'proc' command first).
+Warning: Ignoring module tile_controller because it contains processes (run 'proc' command first).
+Warning: Ignoring module $paramod$8392c0aee371eac30cfcd917af9a6c37ac869d3e\pe because it contains processes (run 'proc' command first).
+Warning: Ignoring module matmul_16x16 because it contains processes (run 'proc' command first).
+Warning: Ignoring module $paramod$8392c0aee371eac30cfcd917af9a6c37ac869d3e\mac because it contains processes (run 'proc' command first).
+12. Executing RTLIL backend.
+Warnings: 8 unique messages, 10 total
+End of script. Logfile hash: aa6abfebc2, time: 0.16s, user: 0.13s, system: 0.02s, MEM: 42.75 MB peak
+Yosys 0.68+post (git sha1 UNKNOWN, Release, GNU /usr/local/bin/wrapped-cc/g++ 11.4.0)
+Time spent: 63% 4x read_liberty (0 sec), 17% 1x hierarchy (0 sec), ...
+Elapsed time: 0:00.17[h:]min:sec. CPU time: user 0.14 sys 0.02 (97%). Peak memory: 46720KB.
+Log                       Ext     Elapsed/s Peak Memory/MB sha1sum result [0:20)
+1_1_yosys_canonicalize    .rtlil          0             45 42505309871760739eb4
+/OpenROAD-flow-scripts/flow/scripts/synth.sh /OpenROAD-flow-scripts/flow/scripts/synth.tcl /work/logs/nangate45/opentransformer/base/1_2_yosys.log
+Using ABC speed script.
+Extracting clock period from SDC file: /work/results/nangate45/opentransformer/base/clock_period.txt
+Setting clock period to 10.000
+1. Executing RTLIL frontend.
+2. Executing HIERARCHY pass (managing design hierarchy).
+2.1. Analyzing design hierarchy..
+2.2. Analyzing design hierarchy..
+3. Executing SYNTH pass.
+3.1. Executing HIERARCHY pass (managing design hierarchy).
+3.1.1. Analyzing design hierarchy..
+3.1.2. Analyzing design hierarchy..
+3.2. Executing PROC pass (convert processes to netlists).
+3.2.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+3.2.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+3.2.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+3.2.4. Executing PROC_INIT pass (extract init attributes).
+3.2.5. Executing PROC_ARST pass (detect async resets in processes).
+3.2.6. Executing PROC_ROM pass (convert switches to ROMs).
+3.2.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+3.2.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+3.2.9. Executing PROC_DFF pass (convert process syncs to FFs).
+3.2.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+3.2.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+3.2.12. Executing OPT_EXPR pass (perform const folding).
+3.3. Executing CHECK pass (checking for obvious problems).
+3.4. Executing FLATTEN pass (flatten design).
+3.5. Executing OPT_EXPR pass (perform const folding).
+3.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+3.7. Executing CHECK pass (checking for obvious problems).
+3.8. Executing OPT pass (performing simple optimizations).
+3.8.1. Executing OPT_EXPR pass (perform const folding).
+3.8.2. Executing OPT_MERGE pass (detect identical cells).
+3.8.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+3.8.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+3.8.5. Executing OPT_MERGE pass (detect identical cells).
+3.8.6. Executing OPT_DFF pass (perform DFF optimizations).
+3.8.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+3.8.8. Executing OPT_EXPR pass (perform const folding).
+3.8.9. Rerunning OPT passes. (Maybe there is more to do..)
+3.8.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+3.8.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+3.8.12. Executing OPT_MERGE pass (detect identical cells).
+3.8.13. Executing OPT_DFF pass (perform DFF optimizations).
+3.8.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+3.8.15. Executing OPT_EXPR pass (perform const folding).
+3.8.16. Finished fast OPT passes. (There is nothing left to do.)
+3.9. Executing FSM pass (extract and optimize FSM).
+3.9.1. Executing FSM_DETECT pass (finding FSMs in design).
+3.9.2. Executing FSM_EXTRACT pass (extracting FSM from design).
+3.9.3. Executing FSM_OPT pass (simple optimizations of FSMs).
+3.9.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+3.9.5. Executing FSM_OPT pass (simple optimizations of FSMs).
+3.9.6. Executing FSM_RECODE pass (re-assigning FSM state encoding).
+3.9.7. Executing FSM_INFO pass (dumping all available information on FSM cells).
+3.9.8. Executing FSM_MAP pass (mapping FSMs to basic logic).
+3.10. Executing OPT pass (performing simple optimizations).
+3.10.1. Executing OPT_EXPR pass (perform const folding).
+3.10.2. Executing OPT_MERGE pass (detect identical cells).
+3.10.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+3.10.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+3.10.5. Executing OPT_MERGE pass (detect identical cells).
+3.10.6. Executing OPT_DFF pass (perform DFF optimizations).
+3.10.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+3.10.8. Executing OPT_EXPR pass (perform const folding).
+3.10.9. Rerunning OPT passes. (Maybe there is more to do..)
+3.10.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+3.10.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+3.10.12. Executing OPT_MERGE pass (detect identical cells).
+3.10.13. Executing OPT_DFF pass (perform DFF optimizations).
+3.10.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+3.10.15. Executing OPT_EXPR pass (perform const folding).
+3.10.16. Rerunning OPT passes. (Maybe there is more to do..)
+3.10.17. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+3.10.18. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+3.10.19. Executing OPT_MERGE pass (detect identical cells).
+3.10.20. Executing OPT_DFF pass (perform DFF optimizations).
+3.10.21. Executing OPT_CLEAN pass (remove unused cells and wires).
+3.10.22. Executing OPT_EXPR pass (perform const folding).
+3.10.23. Finished fast OPT passes. (There is nothing left to do.)
+3.11. Executing WREDUCE pass (reducing word size of cells).
+3.12. Executing PEEPOPT pass (run peephole optimizers).
+3.13. Executing OPT_CLEAN pass (remove unused cells and wires).
+3.14. Executing ALUMACC pass (create $alu and $macc cells).
+3.15. Executing SHARE pass (SAT-based resource sharing).
+3.16. Executing OPT pass (performing simple optimizations).
+3.16.1. Executing OPT_EXPR pass (perform const folding).
+3.16.2. Executing OPT_MERGE pass (detect identical cells).
+3.16.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+3.16.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+3.16.5. Executing OPT_MERGE pass (detect identical cells).
+3.16.6. Executing OPT_DFF pass (perform DFF optimizations).
+3.16.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+3.16.8. Executing OPT_EXPR pass (perform const folding).
+3.16.9. Rerunning OPT passes. (Maybe there is more to do..)
+3.16.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+3.16.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+3.16.12. Executing OPT_MERGE pass (detect identical cells).
+3.16.13. Executing OPT_DFF pass (perform DFF optimizations).
+3.16.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+3.16.15. Executing OPT_EXPR pass (perform const folding).
+3.16.16. Rerunning OPT passes. (Maybe there is more to do..)
+3.16.17. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+3.16.18. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+3.16.19. Executing OPT_MERGE pass (detect identical cells).
+3.16.20. Executing OPT_DFF pass (perform DFF optimizations).
+3.16.21. Executing OPT_CLEAN pass (remove unused cells and wires).
+3.16.22. Executing OPT_EXPR pass (perform const folding).
+3.16.23. Finished fast OPT passes. (There is nothing left to do.)
+3.17. Executing MEMORY pass.
+3.17.1. Executing OPT_MEM pass (optimize memories).
+3.17.2. Executing OPT_MEM_PRIORITY pass (removing unnecessary memory write priority relations).
+3.17.3. Executing OPT_MEM_FEEDBACK pass (finding memory read-to-write feedback paths).
+3.17.4. Executing MEMORY_BMUX2ROM pass (converting muxes to ROMs).
+3.17.5. Executing MEMORY_DFF pass (merging $dff cells to $memrd).
+3.17.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+3.17.7. Executing MEMORY_SHARE pass (consolidating $memrd/$memwr cells).
+3.17.8. Executing OPT_MEM_WIDEN pass (optimize memories where all ports are wide).
+3.17.9. Executing OPT_CLEAN pass (remove unused cells and wires).
+3.17.10. Executing MEMORY_COLLECT pass (generating $mem cells).
+3.18. Executing OPT_CLEAN pass (remove unused cells and wires).
+4. Executing SYNTH pass.
+4.1. Executing OPT pass (performing simple optimizations).
+4.1.1. Executing OPT_EXPR pass (perform const folding).
+4.1.2. Executing OPT_MERGE pass (detect identical cells).
+4.1.3. Executing OPT_DFF pass (perform DFF optimizations).
+4.1.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+4.1.5. Finished fast OPT passes.
+4.2. Executing MEMORY_MAP pass (converting memories to logic and flip-flops).
+4.3. Executing OPT pass (performing simple optimizations).
+4.3.1. Executing OPT_EXPR pass (perform const folding).
+4.3.2. Executing OPT_MERGE pass (detect identical cells).
+4.3.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+4.3.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+4.3.5. Executing OPT_MERGE pass (detect identical cells).
+4.3.6. Executing OPT_SHARE pass.
+4.3.7. Executing OPT_DFF pass (perform DFF optimizations).
+4.3.8. Executing OPT_CLEAN pass (remove unused cells and wires).
+4.3.9. Executing OPT_EXPR pass (perform const folding).
+4.3.10. Rerunning OPT passes. (Maybe there is more to do..)
+4.3.11. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+4.3.12. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+4.3.13. Executing OPT_MERGE pass (detect identical cells).
+4.3.14. Executing OPT_SHARE pass.
+4.3.15. Executing OPT_DFF pass (perform DFF optimizations).
+4.3.16. Executing OPT_CLEAN pass (remove unused cells and wires).
+4.3.17. Executing OPT_EXPR pass (perform const folding).
+4.3.18. Rerunning OPT passes. (Maybe there is more to do..)
+4.3.19. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+4.3.20. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+4.3.21. Executing OPT_MERGE pass (detect identical cells).
+4.3.22. Executing OPT_SHARE pass.
+4.3.23. Executing OPT_DFF pass (perform DFF optimizations).
+4.3.24. Executing OPT_CLEAN pass (remove unused cells and wires).
+4.3.25. Executing OPT_EXPR pass (perform const folding).
+4.3.26. Finished fast OPT passes. (There is nothing left to do.)
+4.4. Executing TECHMAP pass (map to technology primitives).
+4.4.1. Executing Verilog-2005 frontend: /OpenROAD-flow-scripts/tools/install/yosys/bin/../share/yosys/techmap.v
+4.4.2. Executing Verilog-2005 frontend: /OpenROAD-flow-scripts/flow/platforms/common/lcu_kogge_stone.v
+4.4.3. Continuing TECHMAP pass.
+4.5. Executing OPT pass (performing simple optimizations).
+4.5.1. Executing OPT_EXPR pass (perform const folding).
+4.5.2. Executing OPT_MERGE pass (detect identical cells).
+4.5.3. Executing OPT_DFF pass (perform DFF optimizations).
+4.5.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+4.5.5. Finished fast OPT passes.
+4.6. Executing HIERARCHY pass (managing design hierarchy).
+4.6.1. Analyzing design hierarchy..
+4.6.2. Analyzing design hierarchy..
+4.7. Printing statistics.
+4.8. Executing CHECK pass (checking for obvious problems).
+5. Executing OPT pass (performing simple optimizations).
+5.1. Executing OPT_EXPR pass (perform const folding).
+5.2. Executing OPT_MERGE pass (detect identical cells).
+5.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+5.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+5.5. Executing OPT_MERGE pass (detect identical cells).
+5.6. Executing OPT_DFF pass (perform DFF optimizations).
+5.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+5.8. Executing OPT_EXPR pass (perform const folding).
+5.9. Rerunning OPT passes. (Maybe there is more to do..)
+5.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+5.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+5.12. Executing OPT_MERGE pass (detect identical cells).
+5.13. Executing OPT_DFF pass (perform DFF optimizations).
+5.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+5.15. Executing OPT_EXPR pass (perform const folding).
+5.16. Finished fast OPT passes. (There is nothing left to do.)
+6. Executing EXTRACT_FA pass (find and extract full/half adders).
+7. Executing TECHMAP pass (map to technology primitives).
+7.1. Executing Verilog-2005 frontend: /OpenROAD-flow-scripts/flow/platforms/nangate45/cells_adders.v
+7.2. Continuing TECHMAP pass.
+8. Executing TECHMAP pass (map to technology primitives).
+8.1. Executing Verilog-2005 frontend: /OpenROAD-flow-scripts/tools/install/yosys/bin/../share/yosys/techmap.v
+8.2. Continuing TECHMAP pass.
+9. Executing OPT pass (performing simple optimizations).
+9.1. Executing OPT_EXPR pass (perform const folding).
+9.2. Executing OPT_MERGE pass (detect identical cells).
+9.3. Executing OPT_DFF pass (perform DFF optimizations).
+9.4. Executing OPT_CLEAN pass (remove unused cells and wires).
+9.5. Finished fast OPT passes.
+10. Executing DFFLEGALIZE pass (convert FFs to types supported by the target).
+11. Executing TECHMAP pass (map to technology primitives).
+11.1. Executing Verilog-2005 frontend: /OpenROAD-flow-scripts/flow/platforms/nangate45/cells_latch.v
+11.2. Continuing TECHMAP pass.
+12. Executing DFFLIBMAP pass (mapping DFF cells to sequential cells from liberty file).
+12.1. Executing DFFLEGALIZE pass (convert FFs to types supported by the target).
+13. Executing OPT pass (performing simple optimizations).
+13.1. Executing OPT_EXPR pass (perform const folding).
+13.2. Executing OPT_MERGE pass (detect identical cells).
+13.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+13.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+13.5. Executing OPT_MERGE pass (detect identical cells).
+13.6. Executing OPT_DFF pass (perform DFF optimizations).
+13.7. Executing OPT_CLEAN pass (remove unused cells and wires).
+13.8. Executing OPT_EXPR pass (perform const folding).
+13.9. Rerunning OPT passes. (Maybe there is more to do..)
+13.10. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+13.11. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+13.12. Executing OPT_MERGE pass (detect identical cells).
+13.13. Executing OPT_DFF pass (perform DFF optimizations).
+13.14. Executing OPT_CLEAN pass (remove unused cells and wires).
+13.15. Executing OPT_EXPR pass (perform const folding).
+13.16. Finished fast OPT passes. (There is nothing left to do.)
+14. Executing SETUNDEF pass (replace undef values with defined constants).
+abc -script /OpenROAD-flow-scripts/flow/scripts/abc_speed.script -liberty /OpenROAD-flow-scripts/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib -dont_use TAPCELL_X1 -dont_use FILLCELL_X1 -dont_use AOI211_X1 -dont_use OAI211_X1 -constr /work/objects/nangate45/opentransformer/base/abc.constr -D 10.0
+15. Executing ABC pass (technology mapping using ABC).
+15.1. Extracting gate netlist of module `\matmul_16x16' to `<abc-temp-dir>/input.blif'..
+15.1.1. Executed ABC.
+15.1.2. Re-integrating ABC results.
+Took 69 seconds: abc -script /OpenROAD-flow-scripts/flow/scripts/abc_speed.script -liberty /OpenROAD-flow-scripts/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib -dont_use TAPCELL_X1 -dont_use FILLCELL_X1 -dont_use AOI211_X1 -dont_use OAI211_X1 -constr /work/objects/nangate45/opentransformer/base/abc.constr -D 10.0
+16. Executing SPLITNETS pass (splitting up multi-bit signals).
+17. Executing OPT_CLEAN pass (remove unused cells and wires).
+18. Executing HILOMAP pass (mapping to constant drivers).
+19. Executing INSBUF pass (insert buffer cells for connected wires).
+20. Executing CHECK pass (checking for obvious problems).
+21. Printing statistics.
+22. Executing CHECK pass (checking for obvious problems).
+23. Executing Verilog backend.
+23.1. Executing BMUXMAP pass.
+23.2. Executing DEMUXMAP pass.
+End of script. Logfile hash: 869e236ad0, time: 81.50s, user: 14.29s, system: 0.38s, MEM: 220.32 MB peak
+Yosys 0.68+post (git sha1 UNKNOWN, Release, GNU /usr/local/bin/wrapped-cc/g++ 11.4.0)
+Time spent: 83% 1x abc (69 sec), 4% 1x extract_fa (3 sec), ...
+Elapsed time: 1:21.60[h:]min:sec. CPU time: user 83.03 sys 0.59 (102%). Peak memory: 227144KB.
+Log                       Ext     Elapsed/s Peak Memory/MB sha1sum result [0:20)
+1_2_yosys                 .v             81            221 e193c59ad2f2c9ff79ac
+cp /workspaces/OpenTransformer/openroad/constraint.sdc /work/results/nangate45/opentransformer/base/1_2_yosys.sdc
+touch -r /workspaces/OpenTransformer/openroad/constraint.sdc /work/results/nangate45/opentransformer/base/1_2_yosys.sdc
+OpenROAD 26Q3-1867-g84e3ff1eb2 
+Features included (+) or not (-): +GPU +GUI +Python
+This program is licensed under the BSD-3 license. See the LICENSE file for details.
+Components of this program may be licensed under more restrictive licenses which must be honored.
+[INFO ORD-0030] Using 4 thread(s).
+mkdir -p /work/objects/nangate45/opentransformer/base
+/OpenROAD-flow-scripts/flow/scripts/flow.sh 1_synth synth_odb
+Running synth_odb.tcl, stage 1_synth
+read_liberty /OpenROAD-flow-scripts/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib
+[INFO ODB-0227] LEF file: /OpenROAD-flow-scripts/flow/platforms/nangate45/lef/NangateOpenCellLibrary.tech.lef, created 22 layers, 27 vias
+[INFO ODB-0227] LEF file: /OpenROAD-flow-scripts/flow/platforms/nangate45/lef/NangateOpenCellLibrary.macro.mod.lef, created 135 library cells
+link_design matmul_16x16
+read_sdc /work/results/nangate45/opentransformer/base/1_2_yosys.sdc
+[WARNING STA-0441] set_input_delay relative to a clock defined on the same port/pin not allowed.
+source /OpenROAD-flow-scripts/flow/platforms/nangate45/setRC.tcl
+eliminate_dead_logic
+Removed 0 unused instances and 0 unused nets.
+Design area 123686 um^2 100% utilization.
+write_db /work/results/nangate45/opentransformer/base/1_synth.odb
+write_sdc -no_timestamp /work/results/nangate45/opentransformer/base/1_synth.sdc
+Elapsed time: 0:01.61[h:]min:sec. CPU time: user 1.45 sys 0.17 (99%). Peak memory: 257004KB.
+Log                       Ext     Elapsed/s Peak Memory/MB sha1sum result [0:20)
+1_synth                   .odb            1            250 ce73f72089dc5e0e991f
+1_synth                   .sdc                             ee9cb546e13fbb360500
+/OpenROAD-flow-scripts/flow/scripts/flow.sh 2_1_floorplan floorplan
+Running floorplan.tcl, stage 2_1_floorplan
+read_liberty /OpenROAD-flow-scripts/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib
+read_db /work/results/nangate45/opentransformer/base/1_synth.odb
+read_sdc /work/results/nangate45/opentransformer/base/1_synth.sdc
+source /OpenROAD-flow-scripts/flow/platforms/nangate45/setRC.tcl
+
+==========================================================================
+Floorplan check_setup
+--------------------------------------------------------------------------
+number instances in verilog is 55788
+initialize_floorplan -utilization 35 -aspect_ratio 1.0 -core_space 1.0 -site FreePDK45_38x28_10R_NP_162NW_34O
+[INFO IFP-0107] Defining die area using utilization: 35.00% and aspect ratio: 1.
+[WARNING IFP-0028] Core area lower left (1.000, 1.000) snapped to (1.140, 1.400).
+[INFO IFP-0001] Added 424 rows of 3128 site FreePDK45_38x28_10R_NP_162NW_34O.
+[INFO IFP-0100] Die BBox:  (  0.000  0.000 ) ( 596.465 596.465 ) um
+[INFO IFP-0101] Core BBox: (  1.140  1.400 ) ( 595.460 595.000 ) um
+[INFO IFP-0102] Core area:                       352788.352 um^2
+[INFO IFP-0103] Total instances area:            123685.744 um^2
+[INFO IFP-0104] Effective utilization:                0.351
+[INFO IFP-0105] Number of instances:                  55788
+source /OpenROAD-flow-scripts/flow/platforms/nangate45/make_tracks.tcl
+source /OpenROAD-flow-scripts/flow/platforms/nangate45/fastroute.tcl
+set_dont_use "TAPCELL_X1 FILLCELL_X1 AOI211_X1 OAI211_X1"
+repair_tie_fanout -separation 0 NangateOpenCellLibrary/LOGIC0_X1/Z
+repair_tie_fanout -separation 0 NangateOpenCellLibrary/LOGIC1_X1/Z
+repair_timing -setup_margin 0 -hold_margin 0 -repair_tns 100 -setup -skip_last_gasp -sequence unbuffer,sizeup,swap,vt_swap -verbose
+[WARNING EST-0027] no estimated parasitics. Using wire load models.
+[INFO RSZ-0100] Repair move sequence: UnbufferMove SizeUpMove SwapPinsMove 
+[INFO RSZ-0098] No setup violations found
+[INFO RSZ-0505] Runtime: 0.42s
+Default units for flow
+ time 1ns
+ capacitance 1fF
+ resistance 1kohm
+ voltage 1v
+ current 1mA
+ power 1nW
+ distance 1um
+   Layer   | Unit Resistance | Unit Capacitance 
+           |       (kohm/um) |          (fF/um)
+------------------------------------------------
+    metal1 |        5.43e-03 |         7.42e-02
+    metal2 |        3.57e-03 |         8.34e-02
+    metal3 |        3.57e-03 |         1.04e-01
+    metal4 |        1.50e-03 |         1.19e-01
+    metal5 |        1.50e-03 |         1.09e-01
+    metal6 |        1.50e-03 |         1.14e-01
+    metal7 |        1.88e-04 |         1.17e-01
+    metal8 |        1.88e-04 |         9.45e-02
+    metal9 |        3.75e-05 |         1.06e-01
+   metal10 |        3.75e-05 |         7.37e-01
+------------------------------------------------
+
+   Layer   | Via Resistance 
+           |         (kohm) 
+----------------------------
+      via1 |       5.00e-03 
+      via2 |       5.00e-03 
+      via3 |       5.00e-03 
+      via4 |       3.00e-03 
+      via5 |       3.00e-03 
+      via6 |       3.00e-03 
+      via7 |       1.00e-03 
+      via8 |       1.00e-03 
+      via9 |       5.00e-04 
+----------------------------
+Report metrics stage 2, floorplan final...
+
+==========================================================================
+floorplan final report_design_area
+--------------------------------------------------------------------------
+Design area 123686 um^2 35% utilization.
+write_db /work/results/nangate45/opentransformer/base/2_1_floorplan.odb
+write_sdc -no_timestamp /work/results/nangate45/opentransformer/base/2_1_floorplan.sdc
+Elapsed time: 0:19.07[h:]min:sec. CPU time: user 20.95 sys 0.40 (111%). Peak memory: 347932KB.
+Log                       Ext     Elapsed/s Peak Memory/MB sha1sum result [0:20)
+2_1_floorplan             .odb           19            339 8037542526f1100f684b
+2_1_floorplan             .sdc                             ee9cb546e13fbb360500
+/OpenROAD-flow-scripts/flow/scripts/flow.sh 2_2_floorplan_macro macro_place
+Running macro_place.tcl, stage 2_2_floorplan_macro
+read_liberty /OpenROAD-flow-scripts/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib
+read_db /work/results/nangate45/opentransformer/base/2_1_floorplan.odb
+read_sdc /work/results/nangate45/opentransformer/base/2_1_floorplan.sdc
+source /OpenROAD-flow-scripts/flow/platforms/nangate45/setRC.tcl
+No macros found: Skipping macro_placement
+Design area 123686 um^2 35% utilization.
+write_db /work/results/nangate45/opentransformer/base/2_2_floorplan_macro.odb
+Elapsed time: 0:00.66[h:]min:sec. CPU time: user 0.54 sys 0.13 (99%). Peak memory: 202792KB.
+Log                       Ext     Elapsed/s Peak Memory/MB sha1sum result [0:20)
+2_2_floorplan_macro       .odb            0            198 8037542526f1100f684b
+/OpenROAD-flow-scripts/flow/scripts/flow.sh 2_3_floorplan_tapcell tapcell
+Running tapcell.tcl, stage 2_3_floorplan_tapcell
+read_liberty /OpenROAD-flow-scripts/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib
+read_db /work/results/nangate45/opentransformer/base/2_2_floorplan_macro.odb
+read_sdc /work/results/nangate45/opentransformer/base/2_1_floorplan.sdc
+source /OpenROAD-flow-scripts/flow/platforms/nangate45/setRC.tcl
+[INFO TAP-0004] Inserted 848 endcaps.
+[INFO TAP-0005] Inserted 852 tapcells.
+Design area 124138 um^2 35% utilization.
+write_db /work/results/nangate45/opentransformer/base/2_3_floorplan_tapcell.odb
+Elapsed time: 0:00.58[h:]min:sec. CPU time: user 0.47 sys 0.11 (99%). Peak memory: 171380KB.
+Log                       Ext     Elapsed/s Peak Memory/MB sha1sum result [0:20)
+2_3_floorplan_tapcell     .odb            0            167 7b18edc270edf108e704
+/OpenROAD-flow-scripts/flow/scripts/flow.sh 2_4_floorplan_pdn pdn
+Running pdn.tcl, stage 2_4_floorplan_pdn
+read_liberty /OpenROAD-flow-scripts/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib
+read_db /work/results/nangate45/opentransformer/base/2_3_floorplan_tapcell.odb
+read_sdc /work/results/nangate45/opentransformer/base/2_1_floorplan.sdc
+source /OpenROAD-flow-scripts/flow/platforms/nangate45/setRC.tcl
+[WARNING PDN-1051] No instances found for grid (CORE_macro_grid_1).
+[WARNING PDN-1051] No instances found for grid (CORE_macro_grid_2).
+[INFO PDN-0001] Inserting grid: grid
+[INFO PDN-0500] Runtime: 0.09s
+Design area 124138 um^2 35% utilization.
+write_db /work/results/nangate45/opentransformer/base/2_4_floorplan_pdn.odb
+Elapsed time: 0:01.08[h:]min:sec. CPU time: user 0.92 sys 0.15 (99%). Peak memory: 215856KB.
+Log                       Ext     Elapsed/s Peak Memory/MB sha1sum result [0:20)
+2_4_floorplan_pdn         .odb            1            210 2152e0eeb580e9a5c34d
+cp /work/results/nangate45/opentransformer/base/2_4_floorplan_pdn.odb /work/results/nangate45/opentransformer/base/2_floorplan.odb
+cp /work/results/nangate45/opentransformer/base/2_1_floorplan.sdc /work/results/nangate45/opentransformer/base/2_floorplan.sdc
+/OpenROAD-flow-scripts/flow/scripts/flow.sh 3_1_place_gp_skip_io global_place_skip_io
+Running global_place_skip_io.tcl, stage 3_1_place_gp_skip_io
+read_liberty /OpenROAD-flow-scripts/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib
+read_db /work/results/nangate45/opentransformer/base/2_floorplan.odb
+read_sdc /work/results/nangate45/opentransformer/base/2_floorplan.sdc
+source /OpenROAD-flow-scripts/flow/platforms/nangate45/setRC.tcl
+global_placement -skip_io -density 0.45 -pad_left 0 -pad_right 0
+[INFO GPL-0001] ---- Initialize GPL Main Data Structures
+[INFO GPL-0002] DBU: 2000
+[INFO GPL-0003] SiteSize: (  0.190  1.400 ) um
+[INFO GPL-0004] CoreBBox: (  1.140  1.400 ) ( 595.460 595.000 ) um
+[INFO GPL-0016] Core area:                  352788.352 um^2
+[INFO GPL-0036] Movable instances area:     123685.744 um^2
+[INFO GPL-0037] Total instances area:       124137.944 um^2
+[INFO GPL-0035] Pin density area adjust:     10480.769 um^2
+[INFO GPL-0032] ---- Initialize Region: Top-level
+[INFO GPL-0006] Number of instances:             57488
+[INFO GPL-0007] Movable instances:               55788
+[INFO GPL-0008] Fixed instances:                  1700
+[INFO GPL-0009] Dummy instances:                     0
+[INFO GPL-0010] Number of nets:                  70297
+[INFO GPL-0011] Number of pins:                 210176
+[INFO GPL-0012] Die BBox:       (  0.000  0.000 ) ( 596.465 596.465 ) um
+[INFO GPL-0013] Placement BBox: (  1.140  1.400 ) ( 595.460 595.000 ) um
+[INFO GPL-0014] Region name: top-level.
+[INFO GPL-0015] Region area:                352788.352 um^2
+[INFO GPL-0017] Fixed instances area:          452.200 um^2
+[INFO GPL-0018] Movable instances area:     134166.513 um^2
+[INFO GPL-0019] Utilization:                    38.079 %
+[INFO GPL-0020] Standard cells area:        134166.513 um^2
+[INFO GPL-0021] Large instances area:            0.000 um^2
+[INFO GPL-0005] ---- Execute Conjugate Gradient Initial Placement.
+[INFO GPL-0051] Source of initial instance position counters:
+	Odb location = 0	Core center = 55788	Region center = 0
+[INFO GPL-0033] ---- Initialize Nesterov Region: Top-level
+[INFO GPL-0023] Placement target density:       0.4500
+[INFO GPL-0024] Movable insts average area:      2.405 um^2
+[INFO GPL-0025] Ideal bin area:                  5.344 um^2
+[INFO GPL-0026] Ideal bin count:                 66012
+[INFO GPL-0027] Total bin area:             352788.352 um^2
+[INFO GPL-0028] Bin count (X, Y):         256 ,    256
+[INFO GPL-0029] Bin size (W * H):       2.322 *  2.319 um
+[INFO GPL-0030] Number of bins:                  65536
+[INFO GPL-0084] ---- Execute Nesterov Global Placement.
+[INFO GPL-0031] HPWL: Half-Perimeter Wirelength
+Iteration | Overflow |     HPWL (um) |  HPWL(%) |   Penalty | Group
+---------------------------------------------------------------
+        0 |   0.9998 |  6.720744e+04 |   +0.00% |  1.14e-16 |      
+       10 |   0.9997 |  5.389897e+04 |  -19.80% |  1.86e-16 |      
+       20 |   0.9997 |  5.362167e+04 |   -0.51% |  3.03e-16 |      
+       30 |   0.9997 |  5.360614e+04 |   -0.03% |  4.93e-16 |      
+       40 |   0.9997 |  5.359341e+04 |   -0.02% |  8.03e-16 |      
+       50 |   0.9997 |  5.358071e+04 |   -0.02% |  1.31e-15 |      
+       60 |   0.9997 |  5.356866e+04 |   -0.02% |  2.13e-15 |      
+       70 |   0.9997 |  5.356414e+04 |   -0.01% |  3.47e-15 |      
+       80 |   0.9997 |  5.358032e+04 |   +0.03% |  5.65e-15 |      
+       90 |   0.9997 |  5.366122e+04 |   +0.15% |  9.21e-15 |      
+      100 |   0.9997 |  5.394421e+04 |   +0.53% |  1.50e-14 |      
+      110 |   0.9995 |  5.471372e+04 |   +1.43% |  2.44e-14 |      
+      120 |   0.9994 |  5.599399e+04 |   +2.34% |  3.98e-14 |      
+      130 |   0.9992 |  5.829952e+04 |   +4.12% |  6.48e-14 |      
+      140 |   0.9988 |  6.321903e+04 |   +8.44% |  1.05e-13 |      
+      150 |   0.9984 |  7.371444e+04 |  +16.60% |  1.71e-13 |      
+      160 |   0.9972 |  9.531957e+04 |  +29.31% |  2.78e-13 |      
+      170 |   0.9954 |  1.262602e+05 |  +32.46% |  4.49e-13 |      
+      180 |   0.9932 |  1.526419e+05 |  +20.89% |  7.28e-13 |      
+      190 |   0.9904 |  1.807194e+05 |  +18.39% |  1.18e-12 |      
+      200 |   0.9863 |  2.198562e+05 |  +21.66% |  1.90e-12 |      
+      210 |   0.9804 |  2.692604e+05 |  +22.47% |  3.07e-12 |      
+      220 |   0.9723 |  3.272947e+05 |  +21.55% |  4.94e-12 |      
+      230 |   0.9617 |  3.971431e+05 |  +21.34% |  7.92e-12 |      
+      240 |   0.9482 |  4.765724e+05 |  +20.00% |  1.27e-11 |      
+      250 |   0.9318 |  5.617793e+05 |  +17.88% |  2.03e-11 |      
+      260 |   0.9120 |  6.526321e+05 |  +16.17% |  3.24e-11 |      
+      270 |   0.8881 |  7.476680e+05 |  +14.56% |  5.17e-11 |      
+      280 |   0.8594 |  8.458156e+05 |  +13.13% |  8.24e-11 |      
+      290 |   0.8262 |  9.466257e+05 |  +11.92% |  1.31e-10 |      
+      300 |   0.7870 |  1.051150e+06 |  +11.04% |  2.09e-10 |      
+      310 |   0.7401 |  1.147464e+06 |   +9.16% |  3.33e-10 |      
+      320 |   0.6824 |  1.218869e+06 |   +6.22% |  5.34e-10 |      
+      330 |   0.6219 |  1.313819e+06 |   +7.79% |  8.53e-10 |      
+      340 |   0.5703 |  1.422713e+06 |   +8.29% |  1.36e-09 |      
+      350 |   0.5291 |  1.485811e+06 |   +4.44% |  2.18e-09 |      
+      360 |   0.4903 |  1.506932e+06 |   +1.42% |  3.53e-09 |      
+      370 |   0.4500 |  1.543779e+06 |   +2.45% |  5.70e-09 |      
+      380 |   0.4173 |  1.571069e+06 |   +1.77% |  9.22e-09 |      
+      390 |   0.3822 |  1.566998e+06 |   -0.26% |  1.50e-08 |      
+      400 |   0.3475 |  1.576115e+06 |   +0.58% |  2.44e-08 |      
+      410 |   0.3179 |  1.571935e+06 |   -0.27% |  3.63e-08 |      
+      420 |   0.2907 |  1.573234e+06 |   +0.08% |  5.35e-08 |      
+      430 |   0.2623 |  1.572441e+06 |   -0.05% |  7.88e-08 |      
+      440 |   0.2340 |  1.573043e+06 |   +0.04% |  1.16e-07 |      
+      450 |   0.2069 |  1.574123e+06 |   +0.07% |  1.71e-07 |      
+      460 |   0.1812 |  1.575136e+06 |   +0.06% |  2.52e-07 |      
+      470 |   0.1585 |  1.576331e+06 |   +0.08% |  3.71e-07 |      
+      480 |   0.1370 |  1.577720e+06 |   +0.09% |  5.46e-07 |      
+      490 |   0.1194 |  1.579125e+06 |   +0.09% |  8.05e-07 |      
+      500 |   0.1034 |  1.580844e+06 |   +0.11% |  1.19e-06 |      
+      503 |   0.0992 |  1.581335e+06 |          |  1.38e-06 |      
+---------------------------------------------------------------
+[INFO GPL-1001] Global placement finished at iteration 503
+[INFO GPL-1002] Placed Cell Area            134166.5132
+[INFO GPL-1003] Available Free Area         352336.1520
+[INFO GPL-1004] Minimum Feasible Density        0.3900 (cell_area / free_area)
+[INFO GPL-1006]   Suggested Target Densities:
+[INFO GPL-1007]     - For 90% usage of free space: 0.4231
+[INFO GPL-1008]     - For 80% usage of free space: 0.4760
+[INFO GPL-1009]     - For 50% usage of free space: 0.7616
+[INFO GPL-1014] Final placement area: 134166.51 (+0.00%)
+[INFO GPL-1018] Final HPWL (um): 1581736.94
+Took 20 seconds: global_placement -skip_io -density 0.45 -pad_left 0 -pad_right 0
+Design area 124138 um^2 35% utilization.
+write_db /work/results/nangate45/opentransformer/base/3_1_place_gp_skip_io.odb
+Elapsed time: 0:20.51[h:]min:sec. CPU time: user 63.01 sys 0.30 (308%). Peak memory: 291584KB.
+Log                       Ext     Elapsed/s Peak Memory/MB sha1sum result [0:20)
+3_1_place_gp_skip_io      .odb           20            284 52eeb8e01200c5bff4d1
+/OpenROAD-flow-scripts/flow/scripts/flow.sh 3_2_place_iop io_placement
+Running io_placement.tcl, stage 3_2_place_iop
+read_liberty /OpenROAD-flow-scripts/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib
+read_db /work/results/nangate45/opentransformer/base/3_1_place_gp_skip_io.odb
+read_sdc /work/results/nangate45/opentransformer/base/2_floorplan.sdc
+source /OpenROAD-flow-scripts/flow/platforms/nangate45/setRC.tcl
+place_pins -hor_layers metal5 -ver_layers metal6
+Found 0 macro blocks.
+Using 2 tracks default min distance between IO pins.
+[INFO PPL-0001] Number of available slots 4244
+[INFO PPL-0002] Number of I/O             63
+[INFO PPL-0003] Number of I/O w/sink      63
+[INFO PPL-0004] Number of I/O w/o sink    0
+[INFO PPL-0005] Slots per section         200
+[INFO PPL-0008] Successfully assigned pins to sections.
+[INFO PPL-0012] I/O nets HPWL: 10158.49 um.
+Design area 124138 um^2 35% utilization.
+write_db /work/results/nangate45/opentransformer/base/3_2_place_iop.odb
+Elapsed time: 0:00.68[h:]min:sec. CPU time: user 0.54 sys 0.14 (99%). Peak memory: 209472KB.
+Log                       Ext     Elapsed/s Peak Memory/MB sha1sum result [0:20)
+3_2_place_iop             .odb            0            204 fa448f2cae5c1e1e8726
+/OpenROAD-flow-scripts/flow/scripts/flow.sh 3_3_place_gp global_place
+Running global_place.tcl, stage 3_3_place_gp
+read_liberty /OpenROAD-flow-scripts/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib
+read_db /work/results/nangate45/opentransformer/base/3_2_place_iop.odb
+read_sdc /work/results/nangate45/opentransformer/base/2_floorplan.sdc
+source /OpenROAD-flow-scripts/flow/platforms/nangate45/setRC.tcl
+[INFO RSZ-0026] Removed 5030 buffers.
+Perform port buffering...
+[INFO RSZ-0027] Inserted 28 BUF_X1 input buffers.
+[INFO RSZ-0028] Inserted 34 BUF_X1 output buffers.
+global_placement -density 0.45 -pad_left 0 -pad_right 0 -routability_driven -timing_driven -force_center_initial_place -min_phi_coef 0.95 -max_phi_coef 1.05
+[INFO GPL-0001] ---- Initialize GPL Main Data Structures
+[INFO GPL-0002] DBU: 2000
+[INFO GPL-0003] SiteSize: (  0.190  1.400 ) um
+[INFO GPL-0004] CoreBBox: (  1.140  1.400 ) ( 595.460 595.000 ) um
+[INFO GPL-0016] Core area:                  352788.352 um^2
+[INFO GPL-0036] Movable instances area:     119401.282 um^2
+[INFO GPL-0037] Total instances area:       119853.482 um^2
+[INFO GPL-0035] Pin density area adjust:     11133.716 um^2
+[INFO GPL-0032] ---- Initialize Region: Top-level
+[INFO GPL-0006] Number of instances:             52520
+[INFO GPL-0007] Movable instances:               50820
+[INFO GPL-0008] Fixed instances:                  1700
+[INFO GPL-0009] Dummy instances:                     0
+[INFO GPL-0010] Number of nets:                  65329
+[INFO GPL-0011] Number of pins:                 200303
+[INFO GPL-0012] Die BBox:       (  0.000  0.000 ) ( 596.465 596.465 ) um
+[INFO GPL-0013] Placement BBox: (  1.140  1.400 ) ( 595.460 595.000 ) um
+[INFO GPL-0014] Region name: top-level.
+[INFO GPL-0015] Region area:                352788.352 um^2
+[INFO GPL-0017] Fixed instances area:          452.200 um^2
+[INFO GPL-0018] Movable instances area:     130534.998 um^2
+[INFO GPL-0019] Utilization:                    37.048 %
+[INFO GPL-0020] Standard cells area:        130534.998 um^2
+[INFO GPL-0021] Large instances area:            0.000 um^2
+[INFO GPL-0005] ---- Execute Conjugate Gradient Initial Placement.
+[INFO GPL-0051] Source of initial instance position counters:
+	Odb location = 0	Core center = 50820	Region center = 0
+[InitialPlace]  Iter: 1 conjugate gradient residual: 0.01230256 HPWL: 1913206415
+[InitialPlace]  Iter: 2 conjugate gradient residual: 0.00138885 HPWL: 579951305
+[InitialPlace]  Iter: 3 conjugate gradient residual: 0.00045300 HPWL: 579080281
+[InitialPlace]  Iter: 4 conjugate gradient residual: 0.00026638 HPWL: 579466686
+[InitialPlace]  Iter: 5 conjugate gradient residual: 0.00031332 HPWL: 579188952
+[InitialPlace]  Iter: 6 conjugate gradient residual: 0.00021837 HPWL: 579425999
+[InitialPlace]  Iter: 7 conjugate gradient residual: 0.00029345 HPWL: 579172276
+[InitialPlace]  Iter: 8 conjugate gradient residual: 0.00020864 HPWL: 579386445
+[InitialPlace]  Iter: 9 conjugate gradient residual: 0.00031091 HPWL: 579171023
+[InitialPlace]  Iter: 10 conjugate gradient residual: 0.00017917 HPWL: 579398566
+[InitialPlace]  Iter: 11 conjugate gradient residual: 0.00018833 HPWL: 579171088
+[InitialPlace]  Iter: 12 conjugate gradient residual: 0.00015053 HPWL: 579334545
+[InitialPlace]  Iter: 13 conjugate gradient residual: 0.00018119 HPWL: 579122315
+[InitialPlace]  Iter: 14 conjugate gradient residual: 0.00016935 HPWL: 579251756
+[InitialPlace]  Iter: 15 conjugate gradient residual: 0.00018653 HPWL: 579074561
+[InitialPlace]  Iter: 16 conjugate gradient residual: 0.00014845 HPWL: 579254123
+[InitialPlace]  Iter: 17 conjugate gradient residual: 0.00017059 HPWL: 579075559
+[InitialPlace]  Iter: 18 conjugate gradient residual: 0.00017425 HPWL: 579204992
+[InitialPlace]  Iter: 19 conjugate gradient residual: 0.00020275 HPWL: 579048272
+[InitialPlace]  Iter: 20 conjugate gradient residual: 0.00019007 HPWL: 579186113
+[INFO GPL-0033] ---- Initialize Nesterov Region: Top-level
+[INFO GPL-0023] Placement target density:       0.4500
+[INFO GPL-0024] Movable insts average area:      2.569 um^2
+[INFO GPL-0025] Ideal bin area:                  5.708 um^2
+[INFO GPL-0026] Ideal bin count:                 61806
+[INFO GPL-0027] Total bin area:             352788.352 um^2
+[INFO GPL-0028] Bin count (X, Y):         128 ,    128
+[INFO GPL-0029] Bin size (W * H):       4.643 *  4.638 um
+[INFO GPL-0030] Number of bins:                  16384
+[INFO GPL-0084] ---- Execute Nesterov Global Placement.
+[INFO GPL-0031] HPWL: Half-Perimeter Wirelength
+Iteration | Overflow |     HPWL (um) |  HPWL(%) |   Penalty | Group
+---------------------------------------------------------------
+        0 |   0.9981 |  7.494158e+04 |   +0.00% |  1.03e-16 |      
+       10 |   0.9932 |  9.522541e+04 |  +27.07% |  1.67e-16 |      
+       20 |   0.9922 |  9.971893e+04 |   +4.72% |  2.71e-16 |      
+       30 |   0.9916 |  9.901899e+04 |   -0.70% |  4.42e-16 |      
+       40 |   0.9911 |  1.005902e+05 |   +1.59% |  7.19e-16 |      
+       50 |   0.9912 |  1.007912e+05 |   +0.20% |  1.17e-15 |      
+       60 |   0.9911 |  1.008380e+05 |   +0.05% |  1.91e-15 |      
+       70 |   0.9913 |  1.006963e+05 |   -0.14% |  3.11e-15 |      
+       80 |   0.9913 |  1.009099e+05 |   +0.21% |  5.06e-15 |      
+       90 |   0.9913 |  1.013087e+05 |   +0.40% |  8.25e-15 |      
+      100 |   0.9913 |  1.017967e+05 |   +0.48% |  1.34e-14 |      
+      110 |   0.9910 |  1.023696e+05 |   +0.56% |  2.19e-14 |      
+      120 |   0.9909 |  1.030577e+05 |   +0.67% |  3.56e-14 |      
+      130 |   0.9906 |  1.040281e+05 |   +0.94% |  5.80e-14 |      
+      140 |   0.9901 |  1.055691e+05 |   +1.48% |  9.45e-14 |      
+      150 |   0.9897 |  1.082301e+05 |   +2.52% |  1.54e-13 |      
+      160 |   0.9889 |  1.128898e+05 |   +4.31% |  2.50e-13 |      
+      170 |   0.9877 |  1.204697e+05 |   +6.71% |  4.07e-13 |      
+      180 |   0.9852 |  1.310252e+05 |   +8.76% |  6.62e-13 |      
+      190 |   0.9819 |  1.453529e+05 |  +10.94% |  1.07e-12 |      
+      200 |   0.9760 |  1.645630e+05 |  +13.22% |  1.74e-12 |      
+      210 |   0.9667 |  1.898443e+05 |  +15.36% |  2.82e-12 |      
+      220 |   0.9532 |  2.199932e+05 |  +15.88% |  4.57e-12 |      
+      230 |   0.9361 |  2.532596e+05 |  +15.12% |  7.39e-12 |      
+      240 |   0.9155 |  2.887526e+05 |  +14.01% |  1.19e-11 |      
+      250 |   0.8915 |  3.259185e+05 |  +12.87% |  1.93e-11 |      
+      260 |   0.8623 |  3.662733e+05 |  +12.38% |  3.12e-11 |      
+      270 |   0.8296 |  4.080862e+05 |  +11.42% |  5.03e-11 |      
+      280 |   0.7925 |  4.529677e+05 |  +11.00% |  8.12e-11 |      
+      290 |   0.7510 |  4.987094e+05 |  +10.10% |  1.31e-10 |      
+      300 |   0.7082 |  5.429440e+05 |   +8.87% |  2.11e-10 |      
+      310 |   0.6667 |  5.780685e+05 |   +6.47% |  3.41e-10 |      
+[INFO GPL-0100] Timing-driven iteration 1/2, virtual: false.
+[INFO GPL-0101]    Iter: 318, overflow: 0.635, keep resizer changes at: 1, HPWL: 1181990429
+Iteration |   Area    | Resized | Buffers | Nets repaired | Remaining
+---------------------------------------------------------------------
+        0 |     +0.0% |       0 |       0 |             0 |     65329
+    final |     +1.5% |     470 |     691 |           568 |         0
+---------------------------------------------------------------------
+[INFO RSZ-0034] Found 489 slew violations.
+[INFO RSZ-0036] Found 273 capacitance violations.
+[INFO RSZ-0037] Found 29 long wires.
+[INFO RSZ-0039] Resized 470 instances.
+[INFO RSZ-0038] Inserted 691 buffers in 568 nets.
+   Iter   |    Area   | Removed | Inserted |   Pins
+          |           | Buffers | Buffers  | Remaining
+-------------------------------------------------------
+        0 |     +0.0% |       0 |        0 |     65300
+     6500 |     -0.0% |      28 |       13 |     58800
+    13000 |     -0.0% |      28 |       13 |     52300
+    19500 |     -0.0% |     108 |      104 |     45800
+    26000 |     -0.1% |     164 |      180 |     39300
+    32500 |     -0.1% |     411 |      457 |     32800
+    39000 |     -0.2% |     580 |      613 |     26300
+    45500 |     -0.2% |     649 |      680 |     19800
+    52000 |     -0.2% |     649 |      680 |     13300
+    58500 |     -0.2% |     649 |      680 |      6800
+    65000 |     -0.2% |     649 |      680 |       300
+    final |     -0.2% |     691 |      725 |         0
+-------------------------------------------------------
+[INFO GPL-0106] Timing-driven: worst slack 7.044144e-09
+[INFO GPL-0107] Timing-driven: repair_design delta area: 1385.276 um^2 (+1.06%)
+[INFO GPL-0108] Timing-driven: repair_design, gpl delta gcells: 725 (+1.43%)
+[INFO GPL-0109] Timing-driven: repair_design, gcells created: 1416, deleted: 691
+[INFO GPL-0110] Timing-driven: new target density: 0.4539317
+Iteration | Overflow |     HPWL (um) |  HPWL(%) |   Penalty | Group
+---------------------------------------------------------------
+      320 |   0.6214 |  6.573861e+05 |  +13.72% |  5.48e-10 |      
+      330 |   0.5986 |  6.774326e+05 |   +3.05% |  8.84e-10 |      
+[INFO GPL-0038] Routability snapshot saved at iter = 331
+      330 |   0.5986 |  6.774326e+05 |          |           |      
+      340 |   0.5687 |  6.816247e+05 |   +0.62% |  1.44e-09 |      
+      350 |   0.5038 |  7.021685e+05 |   +3.01% |  2.33e-09 |      
+      360 |   0.4486 |  7.039580e+05 |   +0.25% |  3.80e-09 |      
+      370 |   0.4077 |  7.076691e+05 |   +0.53% |  6.18e-09 |      
+      380 |   0.3597 |  7.150988e+05 |   +1.05% |  1.00e-08 |      
+      390 |   0.3230 |  7.115658e+05 |   -0.49% |  1.54e-08 |      
+[INFO GPL-0040] Routability iteration: 1
+[WARNING GRT-0281] Net clk has a large fanout of 13044 terminals.
+[INFO GPL-0041] Total routing overflow: 2.0631
+[INFO GPL-0042] Number of overflowed tiles: 20 (0.05%)
+[INFO GPL-0043] Average top 0.5% routing congestion: 0.8862
+[INFO GPL-0044] Average top 1.0% routing congestion: 0.8371
+[INFO GPL-0045] Average top 2.0% routing congestion: 0.7896
+[INFO GPL-0046] Average top 5.0% routing congestion: 0.7282
+[INFO GPL-0047] Routability iteration weighted routing congestion: 0.8617
+[INFO GPL-0050] Weighted routing congestion is lower than target routing congestion(1.0100), end routability optimization.
+[INFO GPL-0090] Routability finished. Target routing congestion achieved succesfully.
+Iteration | Overflow |     HPWL (um) |  HPWL(%) |   Penalty | Group
+---------------------------------------------------------------
+      400 |   0.2924 |  7.070622e+05 |   -0.63% |  2.27e-08 |      
+      410 |   0.2605 |  7.068637e+05 |   -0.03% |  3.34e-08 |      
+      420 |   0.2342 |  7.060391e+05 |   -0.12% |  4.92e-08 |      
+      430 |   0.2067 |  7.031057e+05 |   -0.42% |  7.25e-08 |      
+[INFO GPL-0100] Timing-driven iteration 2/2, virtual: false.
+[INFO GPL-0101]    Iter: 436, overflow: 0.192, keep resizer changes at: 1, HPWL: 1404017562
+Iteration |   Area    | Resized | Buffers | Nets repaired | Remaining
+---------------------------------------------------------------------
+        0 |     +0.0% |       0 |       0 |             0 |     66054
+    final |     +0.8% |      16 |     583 |           590 |         0
+---------------------------------------------------------------------
+[INFO RSZ-0034] Found 27 slew violations.
+[INFO RSZ-0036] Found 572 capacitance violations.
+[INFO RSZ-0039] Resized 16 instances.
+[INFO RSZ-0038] Inserted 583 buffers in 590 nets.
+   Iter   |    Area   | Removed | Inserted |   Pins
+          |           | Buffers | Buffers  | Remaining
+-------------------------------------------------------
+        0 |     +0.0% |       0 |        0 |     65300
+     6500 |     -0.0% |      45 |       23 |     58800
+    13000 |     -0.0% |      45 |       23 |     52300
+    19500 |     -0.0% |     179 |      146 |     45800
+    26000 |     -0.4% |     673 |      461 |     39300
+    32500 |     -0.4% |    1002 |      861 |     32800
+    39000 |     -0.4% |    1186 |     1092 |     26300
+    45500 |     -0.4% |    1257 |     1177 |     19800
+    52000 |     -0.4% |    1257 |     1177 |     13300
+    58500 |     -0.4% |    1257 |     1177 |      6800
+    65000 |     -0.4% |    1257 |     1180 |       300
+    final |     -0.3% |    1308 |     1247 |         0
+-------------------------------------------------------
+[INFO GPL-0106] Timing-driven: worst slack 7.1173454e-09
+[INFO GPL-0107] Timing-driven: repair_design delta area: 531.787 um^2 (+0.40%)
+[INFO GPL-0108] Timing-driven: repair_design, gpl delta gcells: 522 (+1.01%)
+[INFO GPL-0109] Timing-driven: repair_design, gcells created: 1830, deleted: 1308
+[INFO GPL-0110] Timing-driven: new target density: 0.45544097
+Iteration | Overflow |     HPWL (um) |  HPWL(%) |   Penalty | Group
+---------------------------------------------------------------
+      440 |   0.1816 |  7.540908e+05 |   +7.25% |  1.06e-07 |      
+      450 |   0.1582 |  7.422834e+05 |   -1.57% |  1.56e-07 |      
+      460 |   0.1359 |  7.395812e+05 |   -0.36% |  2.29e-07 |      
+      470 |   0.1173 |  7.367467e+05 |   -0.38% |  3.38e-07 |      
+      480 |   0.1009 |  7.347660e+05 |   -0.27% |  4.97e-07 |      
+      481 |   0.0992 |  7.347832e+05 |          |  5.37e-07 |      
+---------------------------------------------------------------
+[INFO GPL-1001] Global placement finished at iteration 481
+[INFO GPL-1017] Routability mode iteration count: 67
+[INFO GPL-1005] Routability final weighted congestion: 0.7699
+[INFO GPL-1002] Placed Cell Area            132452.0611
+[INFO GPL-1003] Available Free Area         352336.1520
+[INFO GPL-1004] Minimum Feasible Density        0.3800 (cell_area / free_area)
+[INFO GPL-1006]   Suggested Target Densities:
+[INFO GPL-1007]     - For 90% usage of free space: 0.4177
+[INFO GPL-1008]     - For 80% usage of free space: 0.4699
+[INFO GPL-1009]     - For 50% usage of free space: 0.7519
+[INFO GPL-1011] Original area (um^2): 130535.00
+[INFO GPL-1012] Total routability artificial inflation: 0.00 (+0.00%)
+[INFO GPL-1013] Total timing-driven delta area: 1917.06 (+1.47%)
+[INFO GPL-1014] Final placement area: 132452.06 (+1.47%)
+[INFO GPL-1018] Final HPWL (um): 735239.95
+Took 92 seconds: global_placement -density 0.45 -pad_left 0 -pad_right 0 -routability_driven -timing_driven -force_center_initial_place -min_phi_coef 0.95 -max_phi_coef 1.05
+estimate_parasitics -placement
+Report metrics stage 3, global place...
+
+==========================================================================
+global place report_design_area
+--------------------------------------------------------------------------
+Design area 121950 um^2 35% utilization.
+write_db /work/results/nangate45/opentransformer/base/3_3_place_gp.odb
+Elapsed time: 1:54.92[h:]min:sec. CPU time: user 197.77 sys 4.75 (176%). Peak memory: 911780KB.
+Log                       Ext     Elapsed/s Peak Memory/MB sha1sum result [0:20)
+3_3_place_gp              .odb          114            890 40d0f69b5861f26d5086
+/OpenROAD-flow-scripts/flow/scripts/flow.sh 3_4_place_resized resize
+Running resize.tcl, stage 3_4_place_resized
+read_liberty /OpenROAD-flow-scripts/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib
+read_db /work/results/nangate45/opentransformer/base/3_3_place_gp.odb
+read_sdc /work/results/nangate45/opentransformer/base/2_floorplan.sdc
+source /OpenROAD-flow-scripts/flow/platforms/nangate45/setRC.tcl
+estimate_parasitics -placement
+Perform buffer insertion and gate resizing...
+repair_design -verbose
+Iteration |   Area    | Resized | Buffers | Nets repaired | Remaining
+---------------------------------------------------------------------
+        0 |     +0.0% |       0 |       0 |             0 |     66576
+     1000 |     +0.0% |       0 |       0 |             0 |     65576
+     2000 |     +0.0% |       0 |       0 |             0 |     64576
+     3000 |     +0.0% |       0 |       1 |             1 |     63576
+     4000 |     +0.0% |       0 |       2 |             2 |     62576
+     5000 |     +0.0% |       0 |      16 |            16 |     61576
+     6000 |     +0.0% |       0 |      35 |            35 |     60576
+     7000 |     +0.0% |       0 |      35 |            35 |     59576
+     8000 |     +0.0% |       0 |      36 |            36 |     58576
+     9000 |     +0.0% |       0 |      42 |            42 |     57576
+    10000 |     +0.0% |       0 |      42 |            42 |     56576
+    11000 |     +0.0% |       0 |      42 |            42 |     55576
+    12000 |     +0.0% |       0 |      42 |            42 |     54576
+    13000 |     +0.0% |       0 |      42 |            42 |     53576
+    14000 |     +0.0% |       0 |      42 |            42 |     52576
+    15000 |     +0.0% |       0 |      42 |            42 |     51576
+    16000 |     +0.0% |       0 |      46 |            46 |     50576
+    17000 |     +0.0% |       0 |      47 |            47 |     49576
+    18000 |     +0.1% |       0 |      80 |            80 |     48576
+    19000 |     +0.1% |       0 |      88 |            88 |     47576
+    20000 |     +0.1% |       0 |     111 |           111 |     46576
+    21000 |     +0.2% |       0 |     182 |           182 |     45576
+    22000 |     +0.2% |       0 |     183 |           183 |     44576
+    23000 |     +0.4% |       0 |     284 |           284 |     43576
+    24000 |     +0.4% |       0 |     284 |           284 |     42576
+    25000 |     +0.4% |       0 |     286 |           286 |     41576
+    26000 |     +0.4% |       0 |     303 |           303 |     40576
+    27000 |     +0.4% |       0 |     303 |           303 |     39576
+    28000 |     +0.4% |       0 |     304 |           304 |     38576
+    29000 |     +0.4% |       0 |     304 |           304 |     37576
+    30000 |     +0.4% |       0 |     309 |           309 |     36576
+    31000 |     +0.4% |       0 |     310 |           310 |     35576
+    32000 |     +0.4% |       0 |     310 |           310 |     34576
+    33000 |     +0.4% |       0 |     312 |           312 |     33576
+    34000 |     +0.4% |       0 |     312 |           312 |     32576
+    35000 |     +0.4% |       0 |     312 |           312 |     31576
+    36000 |     +0.4% |       0 |     313 |           313 |     30576
+    37000 |     +0.4% |       0 |     313 |           313 |     29576
+    38000 |     +0.4% |       0 |     316 |           316 |     28576
+    39000 |     +0.4% |       0 |     318 |           318 |     27576
+    40000 |     +0.4% |       0 |     318 |           318 |     26576
+    41000 |     +0.4% |       0 |     318 |           318 |     25576
+    42000 |     +0.4% |       0 |     318 |           318 |     24576
+    43000 |     +0.4% |       0 |     318 |           318 |     23576
+    44000 |     +0.4% |       0 |     318 |           318 |     22576
+    45000 |     +0.4% |       0 |     318 |           318 |     21576
+    46000 |     +0.4% |       0 |     318 |           318 |     20576
+    47000 |     +0.4% |       0 |     318 |           318 |     19576
+    48000 |     +0.4% |       0 |     318 |           318 |     18576
+    49000 |     +0.4% |       0 |     318 |           318 |     17576
+    50000 |     +0.4% |       0 |     318 |           318 |     16576
+    51000 |     +0.4% |       0 |     318 |           318 |     15576
+    52000 |     +0.4% |       0 |     318 |           318 |     14576
+    53000 |     +0.4% |       0 |     318 |           318 |     13576
+    54000 |     +0.4% |       0 |     318 |           318 |     12576
+    55000 |     +0.4% |       0 |     318 |           318 |     11576
+    56000 |     +0.4% |       0 |     318 |           318 |     10576
+    57000 |     +0.4% |       0 |     318 |           318 |      9576
+    58000 |     +0.4% |       0 |     318 |           318 |      8576
+    59000 |     +0.4% |       0 |     318 |           318 |      7576
+    60000 |     +0.4% |       0 |     318 |           318 |      6576
+    61000 |     +0.4% |       0 |     318 |           318 |      5576
+    62000 |     +0.4% |       0 |     318 |           318 |      4576
+    63000 |     +0.4% |       0 |     318 |           318 |      3576
+    64000 |     +0.4% |       0 |     318 |           318 |      2576
+    65000 |     +0.4% |       0 |     318 |           318 |      1576
+    66000 |     +0.4% |       0 |     318 |           318 |       576
+    final |     +0.4% |       0 |     318 |           318 |         0
+---------------------------------------------------------------------
+[INFO RSZ-0034] Found 1 slew violations.
+[INFO RSZ-0036] Found 317 capacitance violations.
+[INFO RSZ-0038] Inserted 318 buffers in 318 nets.
+[INFO RSZ-0504] Runtime: 6.98s
+Took 7 seconds: repair_design -verbose
+Floating nets: 
+Report metrics stage 3, resizer...
+
+==========================================================================
+resizer report_design_area
+--------------------------------------------------------------------------
+Design area 122446 um^2 35% utilization.
+Instance count before 53767, after 54085
+Pin count before 202734, after 203370
+write_db /work/results/nangate45/opentransformer/base/3_4_place_resized.odb
+Elapsed time: 0:39.06[h:]min:sec. CPU time: user 50.08 sys 1.56 (132%). Peak memory: 412064KB.
+Log                       Ext     Elapsed/s Peak Memory/MB sha1sum result [0:20)
+3_4_place_resized         .odb           39            402 0a038445362fdd1e744b
+/OpenROAD-flow-scripts/flow/scripts/flow.sh 3_5_place_dp detail_place
+Running detail_place.tcl, stage 3_5_place_dp
+read_liberty /OpenROAD-flow-scripts/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib
+read_db /work/results/nangate45/opentransformer/base/3_4_place_resized.odb
+read_sdc /work/results/nangate45/opentransformer/base/2_floorplan.sdc
+source /OpenROAD-flow-scripts/flow/platforms/nangate45/setRC.tcl
+detailed_placement
+[INFO DPL-0006] Core area: 352788.35 um^2
+[INFO DPL-0007] Movable instances area: 121993.45 um^2
+[INFO DPL-0008] Fixed instances area within core: 452.20 um^2
+[INFO DPL-0009] Utilization: 34.7%
+[INFO DPL-0005] Diamond search max displacement: +/- 500 sites horizontally, +/- 100 rows vertically.
+[INFO DPL-1102] Legalizing using negotiation legalizer.
+[INFO DPL-1103] Negotiation base search window: +/-20 sites horizontally, +/-5 rows vertically 
+	Automatic search window extension enabled.
+	Search window extendable up to the max displacement cap of +/-500 sites, +/-100 rows near walls.
+[INFO DPL-1104] NegotiationLegalizer DRC penalty: 5.
+[INFO DPL-0392] Negotiation cell height distribution (1 unique row-count(s)):
+[INFO DPL-0393]   height 1 row(s): 54085 cells
+          |      Total |  Illegal |  Illegal
+Iteration | Violations |    Cells |    Sites
+---------------------------------------------
+        0 |      31784 |      7040 |     24513
+        1 |        180 |        68 |       112
+        2 |          0 |         0 |         0
+Negotiation phase 1 converged at iteration 2.
+[INFO DPL-0500] Runtime: 1.11s
+Placement Analysis
+---------------------------------
+total displacement      75968.8 u
+average displacement        1.4 u
+max displacement            6.1 u
+original HPWL          746878.2 u
+legalized HPWL         797475.6 u
+delta HPWL                    7 %
+
+improve_placement -max_displacement "5 1"
+Detailed placement improvement.
+[INFO DPL-0401] Setting random seed to 1.
+[INFO DPL-0402] Setting maximum displacement 5 1 to 14000 2800 units.
+[INFO DPL-0320] Collected 1763 fixed cells.
+[INFO DPL-0318] Collected 52385 single height cells.
+[INFO DPL-0321] Collected 0 wide cells.
+[INFO DPL-0322] Image (2280, 2800) - (1190920, 1190000)
+[INFO DPL-0310] Assigned 52385 cells into segments.  Movement in X-direction is 0.000000, movement in Y-direction is 0.000000.
+[INFO DPL-0313] Found 0 cells in wrong regions.
+[INFO DPL-0315] Found 0 row alignment problems.
+[INFO DPL-0314] Found 0 site alignment problems.
+[INFO DPL-0311] Found 0 overlaps between adjacent cells.
+[INFO DPL-0312] Found 0 edge spacing violations and 0 padding violations.
+[INFO DPL-0303] Running algorithm for independent set matching.
+[INFO DPL-0300] Set matching objective is wirelength.
+[INFO DPL-0301] Pass   1 of matching; objective is 1.594320e+09.
+[INFO DPL-0302] End of matching; objective is 1.591373e+09, improvement is 0.18 percent.
+[INFO DPL-0303] Running algorithm for global swaps.
+[INFO DPL-0306] Pass   1 of global swaps; hpwl is 1.566528e+09.
+[INFO DPL-0306] Pass   2 of global swaps; hpwl is 1.560490e+09.
+[INFO DPL-0307] End of global swaps; objective is 1.560490e+09, improvement is 1.94 percent.
+[INFO DPL-0303] Running algorithm for vertical swaps.
+[INFO DPL-0308] Pass   1 of vertical swaps; hpwl is 1.554967e+09.
+[INFO DPL-0309] End of vertical swaps; objective is 1.554967e+09, improvement is 0.35 percent.
+[INFO DPL-0303] Running algorithm for reordering.
+[INFO DPL-0304] Pass   1 of reordering; objective is 1.553234e+09.
+[INFO DPL-0305] End of reordering; objective is 1.553234e+09, improvement is 0.11 percent.
+[INFO DPL-0303] Running algorithm for random improvement.
+[INFO DPL-0324] Random improver is using random generator.
+[INFO DPL-0325] Random improver is using hpwl objective.
+[INFO DPL-0326] Random improver cost string is (a).
+[INFO DPL-0332] End of pass, Generator random called 1047700 times.
+[INFO DPL-0335] Generator random, Cumulative attempts 1047700, swaps 109298, moves 363645 since last reset.
+[INFO DPL-0333] End of pass, Objective hpwl, Initial cost 1.537016e+09, Scratch cost 1.521779e+09, Incremental cost 1.521779e+09, Mismatch? N
+[INFO DPL-0338] End of pass, Total cost is 1.521779e+09.
+[INFO DPL-0327] Pass   1 of random improver; improvement in cost is 0.99 percent.
+[INFO DPL-0328] End of random improver; improvement is 0.991334 percent.
+[INFO DPL-0380] Cell flipping.
+[INFO DPL-0382] Changed 0 cell orientations for row compatibility.
+[INFO DPL-0383] Performed 17810 cell flips.
+[INFO DPL-0384] End of flipping; objective is 1.507930e+09, improvement is 1.96 percent.
+[INFO DPL-0313] Found 0 cells in wrong regions.
+[INFO DPL-0315] Found 0 row alignment problems.
+[INFO DPL-0314] Found 0 site alignment problems.
+[INFO DPL-0311] Found 0 overlaps between adjacent cells.
+[INFO DPL-0312] Found 0 edge spacing violations and 0 padding violations.
+Detailed Improvement Results
+------------------------------------------
+Original HPWL           797475.6 u (  360928.8,   436546.8)
+Final HPWL              754438.7 u (  340671.3,   413767.4)
+Delta HPWL                  -5.4 % (      -5.6,       -5.2)
+
+Took 13 seconds: improve_placement -max_displacement "5 1"
+optimize_mirroring
+[INFO DPL-0020] Mirrored 1778 instances
+[INFO DPL-0021] HPWL before          754438.7 u
+[INFO DPL-0022] HPWL after           754035.2 u
+[INFO DPL-0023] HPWL delta               -0.1 %
+[INFO FLW-0012] Placement violations .
+estimate_parasitics -placement
+Report metrics stage 3, detailed place...
+
+==========================================================================
+detailed place report_design_area
+--------------------------------------------------------------------------
+Design area 122446 um^2 35% utilization.
+write_db /work/results/nangate45/opentransformer/base/3_5_place_dp.odb
+write_sdc -no_timestamp /work/results/nangate45/opentransformer/base/3_place.sdc
+Elapsed time: 0:48.59[h:]min:sec. CPU time: user 59.07 sys 1.42 (124%). Peak memory: 530976KB.
+Log                       Ext     Elapsed/s Peak Memory/MB sha1sum result [0:20)
+3_5_place_dp              .odb           48            518 41777e7a4cbccdfdcd57
+cp /work/results/nangate45/opentransformer/base/3_5_place_dp.odb /work/results/nangate45/opentransformer/base/3_place.odb
+/OpenROAD-flow-scripts/flow/scripts/flow.sh 4_1_cts cts
+Running cts.tcl, stage 4_1_cts
+read_liberty /OpenROAD-flow-scripts/flow/platforms/nangate45/lib/NangateOpenCellLibrary_typical.lib
+read_db /work/results/nangate45/opentransformer/base/3_place.odb
+read_sdc /work/results/nangate45/opentransformer/base/3_place.sdc
+source /OpenROAD-flow-scripts/flow/platforms/nangate45/setRC.tcl
+clock_tree_synthesis -sink_clustering_enable -repair_clock_nets
+[INFO CTS-0050] Root buffer is CLKBUF_X3.
+[INFO CTS-0051] Sink buffer is CLKBUF_X3.
+[INFO CTS-0052] The following clock buffers will be used for CTS:
+                    CLKBUF_X3
+[INFO CTS-0049] Characterization buffer is CLKBUF_X3.
+[INFO CTS-0007] Net "clk" found for clock "clk".
+[INFO CTS-0010]  Clock net "clk" has 13043 sinks.
+[INFO CTS-0008] TritonCTS found 1 clock nets.
+[INFO CTS-0097] Characterization used 1 buffer(s) types.
+[INFO CTS-0201] 0 blockages from hard placement blockages and placed macros will be used.
+[INFO CTS-0027] Generating H-Tree topology for net clk.
+[INFO CTS-0028]  Total number of sinks: 13043.
+[INFO CTS-0090]  Sinks will be clustered based on buffer max cap.
+[INFO CTS-0030]  Number of static layers: 0.
+[INFO CTS-0020]  Wire segment unit: 14000  dbu (7 um).
+[INFO CTS-0206] Best clustering solution was found from max clustering size of 9 and max clustering diameter of 67.
+[INFO CTS-0019]  Total number of sinks after clustering: 1973.
+[INFO CTS-0024]  Normalized sink region: [(0.734796, 1.2), (84.2243, 83.335)].
+[INFO CTS-0025]     Width:  83.4895.
+[INFO CTS-0026]     Height: 82.1350.
+ Level 1
+    Direction: Horizontal
+    Sinks per sub-region: 987
+    Sub-region size: 41.7447 X 82.1350
+[INFO CTS-0034]     Segment length (rounded): 20.
+ Level 2
+    Direction: Vertical
+    Sinks per sub-region: 494
+    Sub-region size: 41.7447 X 41.0675
+[INFO CTS-0034]     Segment length (rounded): 20.
+ Level 3
+    Direction: Horizontal
+    Sinks per sub-region: 247
+    Sub-region size: 20.8724 X 41.0675
+[INFO CTS-0034]     Segment length (rounded): 10.
+ Level 4
+    Direction: Vertical
+    Sinks per sub-region: 124
+    Sub-region size: 20.8724 X 20.5337
+[INFO CTS-0034]     Segment length (rounded): 10.
+ Level 5
+    Direction: Horizontal
+    Sinks per sub-region: 62
+    Sub-region size: 10.4362 X 20.5337
+[INFO CTS-0034]     Segment length (rounded): 6.
+ Level 6
+    Direction: Vertical
+    Sinks per sub-region: 31
+    Sub-region size: 10.4362 X 10.2669
+[INFO CTS-0034]     Segment length (rounded): 6.
+ Level 7
+    Direction: Horizontal
+    Sinks per sub-region: 16
+    Sub-region size: 5.2181 X 10.2669
+[INFO CTS-0034]     Segment length (rounded): 2.
+ Level 8
+    Direction: Vertical
+    Sinks per sub-region: 8
+    Sub-region size: 5.2181 X 5.1334
+[INFO CTS-0034]     Segment length (rounded): 2.
+[INFO CTS-0038]  Stop criterion found. Sink region hpwl is smaller than max wirelength (591.189 um) and max number of sinks is 15.
+[INFO CTS-0035]  Number of sinks covered: 1973.
+[INFO CTS-0018]     Created 2306 clock buffers.
+[INFO CTS-0012]     Minimum number of buffers in the clock path: 6.
+[INFO CTS-0013]     Maximum number of buffers in the clock path: 6.
+[INFO CTS-0015]     Created 2306 clock nets.
+[INFO CTS-0016]     Fanout distribution for the current clock = 2:1, 3:4, 4:34, 5:115, 6:730, 7:1030, 8:221, 9:42, 10:33, 11:11, 12:4, 13:2, 15:2..
+[INFO CTS-0017]     Max level of the clock tree: 8.
+[INFO CTS-0098] Clock net "clk"
+[INFO CTS-0099]  Sinks 14506
+[INFO CTS-0100]  Leaf buffers 1973
+[INFO CTS-0101]  Average sink wire length 1091.06 um
+[INFO CTS-0102]  Path depth 5 - 6
+[INFO CTS-0207]  Dummy loads inserted 1463
+[INFO RSZ-0047] Found 1 long wires.
+[INFO RSZ-0048] Inserted 1 buffers in 1 nets.
+[INFO CTS-0500] Runtime: 5.95s
+Took 5 seconds: clock_tree_synthesis -sink_clustering_enable -repair_clock_nets
+estimate_parasitics -placement
+detailed_placement
+[INFO DPL-0006] Core area: 352788.35 um^2
+[INFO DPL-0007] Movable instances area: 126176.83 um^2
+[INFO DPL-0008] Fixed instances area within core: 452.20 um^2
+[INFO DPL-0009] Utilization: 35.9%
+[INFO DPL-0005] Diamond search max displacement: +/- 500 sites horizontally, +/- 100 rows vertically.
+[INFO DPL-1102] Legalizing using negotiation legalizer.
+[INFO DPL-1103] Negotiation base search window: +/-20 sites horizontally, +/-5 rows vertically 
+	Automatic search window extension enabled.
+	Search window extendable up to the max displacement cap of +/-500 sites, +/-100 rows near walls.
+[INFO DPL-1104] NegotiationLegalizer DRC penalty: 5.
+[INFO DPL-0392] Negotiation cell height distribution (1 unique row-count(s)):
+[INFO DPL-0393]   height 1 row(s): 57855 cells
+          |      Total |  Illegal |  Illegal
+Iteration | Violations |    Cells |    Sites
+---------------------------------------------
+        0 |       3401 |       973 |      2425
+        1 |         35 |        11 |        24
+        2 |          0 |         0 |         0
+Negotiation phase 1 converged at iteration 2.
+[INFO DPL-0500] Runtime: 0.90s
+Placement Analysis
+---------------------------------
+total displacement      34133.2 u
+average displacement        0.6 u
+max displacement            6.0 u
+original HPWL          815647.1 u
+legalized HPWL         831694.5 u
+delta HPWL                    2 %
+
+estimate_parasitics -placement
+repair_timing -setup_margin 0 -hold_margin 0 -repair_tns 100 -verbose
+[INFO RSZ-0100] Repair move sequence: UnbufferMove SizeUpMove SwapPinsMove BufferMove CloneMove SplitLoadMove 
+[INFO RSZ-0098] No setup violations found
+[INFO RSZ-0505] Runtime: 2.98s
+[INFO RSZ-0033] No hold violations found.
+[INFO RSZ-0506] Runtime: 0.86s
+Error: cts.tcl, 83 child killed: illegal instruction
+Elapsed time: 0:17.35[h:]min:sec. CPU time: user 25.05 sys 1.14 (150%). Peak memory: 529164KB.
+make[1]: *** [Makefile:548: do-4_1_cts] Error 1
+make: *** [Makefile:548: /work/results/nangate45/opentransformer/base/4_1_cts.odb] Error 2
